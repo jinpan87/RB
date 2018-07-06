@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <typeAliases>
+	    <typeAlias alias="users" type="com.hk.pm.entity.Users" />
+	    <typeAlias alias="budget" type="com.hk.pm.entity.Budget" />
+	    <typeAlias alias="cashDeposit" type="com.hk.pm.entity.CashDeposit" />
+	    <typeAlias alias="city" type="com.hk.pm.entity.City" />
+	    <typeAlias alias="client" type="com.hk.pm.entity.Client" />
+	    <typeAlias alias="contract" type="com.hk.pm.entity.Contract" />
+	    <typeAlias alias="county" type="com.hk.pm.entity.County" />
+	    <typeAlias alias="log" type="com.hk.pm.entity.Log" />
+	    <typeAlias alias="menu" type="com.hk.pm.entity.Menu" />
+	    <typeAlias alias="payFunded" type="com.hk.pm.entity.PayFunded" />
+	    <typeAlias alias="projectBase" type="com.hk.pm.entity.ProjectBase" />
+	    <typeAlias alias="projectProgress" type="com.hk.pm.entity.ProjectProgress" />
+	    <typeAlias alias="province" type="com.hk.pm.entity.Province" />
+	    <typeAlias alias="record" type="com.hk.pm.entity.Record" />
+	    <typeAlias alias="returnMoney" type="com.hk.pm.entity.ReturnMoney" />
+	    <typeAlias alias="rival" type="com.hk.pm.entity.Rival" />
+	    <typeAlias alias="role" type="com.hk.pm.entity.Role" />
+	    <typeAlias alias="solution" type="com.hk.pm.entity.Solution" />
+	    <typeAlias alias="technicalSupport" type="com.hk.pm.entity.TechnicalSupport" />
+	    <typeAlias alias="type" type="com.hk.pm.entity.Type" />
+	    <typeAlias alias="task" type="com.hk.pm.entity.Task" />
+    </typeAliases>
+</configuration>

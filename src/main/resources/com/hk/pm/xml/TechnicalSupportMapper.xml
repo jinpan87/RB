@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hk.pm.dao.TechnicalSupportMapper" >
+  <resultMap id="BaseResultMap" type="com.hk.pm.entity.TechnicalSupport" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="ts_code" property="tsCode" jdbcType="VARCHAR" />
+    <result column="ts_task" property="tsTask" jdbcType="VARCHAR" />
+    <result column="ts_content" property="tsContent" jdbcType="VARCHAR" />
+    <result column="ts_executor" property="tsExecutor" jdbcType="INTEGER" />
+    <result column="ts_affiliated" property="tsAffiliated" jdbcType="VARCHAR" />
+    <result column="ts_initiator" property="tsInitiator" jdbcType="INTEGER" />
+    <result column="ts_status" property="tsStatus" jdbcType="INTEGER" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, ts_code, ts_task, ts_content, ts_executor, ts_affiliated, ts_initiator, ts_status, 
+    start_time, end_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from s_technical_support
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from s_technical_support
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.hk.pm.entity.TechnicalSupport" >
+    insert into s_technical_support (id, ts_code, ts_task, 
+      ts_content, ts_executor, ts_affiliated, 
+      ts_initiator, ts_status, start_time, 
+      end_time)
+    values (#{id,jdbcType=BIGINT}, #{tsCode,jdbcType=VARCHAR}, #{tsTask,jdbcType=VARCHAR}, 
+      #{tsContent,jdbcType=VARCHAR}, #{tsExecutor,jdbcType=INTEGER}, #{tsAffiliated,jdbcType=VARCHAR}, 
+      #{tsInitiator,jdbcType=INTEGER}, #{tsStatus,jdbcType=INTEGER}, #{startTime,jdbcType=TIMESTAMP}, 
+      #{endTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hk.pm.entity.TechnicalSupport" >
+    insert into s_technical_support
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="tsCode != null" >
+        ts_code,
+      </if>
+      <if test="tsTask != null" >
+        ts_task,
+      </if>
+      <if test="tsContent != null" >
+        ts_content,
+      </if>
+      <if test="tsExecutor != null" >
+        ts_executor,
+      </if>
+      <if test="tsAffiliated != null" >
+        ts_affiliated,
+      </if>
+      <if test="tsInitiator != null" >
+        ts_initiator,
+      </if>
+      <if test="tsStatus != null" >
+        ts_status,
+      </if>
+      <if test="startTime != null" >
+        start_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="tsCode != null" >
+        #{tsCode,jdbcType=VARCHAR},
+      </if>
+      <if test="tsTask != null" >
+        #{tsTask,jdbcType=VARCHAR},
+      </if>
+      <if test="tsContent != null" >
+        #{tsContent,jdbcType=VARCHAR},
+      </if>
+      <if test="tsExecutor != null" >
+        #{tsExecutor,jdbcType=INTEGER},
+      </if>
+      <if test="tsAffiliated != null" >
+        #{tsAffiliated,jdbcType=VARCHAR},
+      </if>
+      <if test="tsInitiator != null" >
+        #{tsInitiator,jdbcType=INTEGER},
+      </if>
+      <if test="tsStatus != null" >
+        #{tsStatus,jdbcType=INTEGER},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hk.pm.entity.TechnicalSupport" >
+    update s_technical_support
+    <set >
+      <if test="tsCode != null" >
+        ts_code = #{tsCode,jdbcType=VARCHAR},
+      </if>
+      <if test="tsTask != null" >
+        ts_task = #{tsTask,jdbcType=VARCHAR},
+      </if>
+      <if test="tsContent != null" >
+        ts_content = #{tsContent,jdbcType=VARCHAR},
+      </if>
+      <if test="tsExecutor != null" >
+        ts_executor = #{tsExecutor,jdbcType=INTEGER},
+      </if>
+      <if test="tsAffiliated != null" >
+        ts_affiliated = #{tsAffiliated,jdbcType=VARCHAR},
+      </if>
+      <if test="tsInitiator != null" >
+        ts_initiator = #{tsInitiator,jdbcType=INTEGER},
+      </if>
+      <if test="tsStatus != null" >
+        ts_status = #{tsStatus,jdbcType=INTEGER},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hk.pm.entity.TechnicalSupport" >
+    update s_technical_support
+    set ts_code = #{tsCode,jdbcType=VARCHAR},
+      ts_task = #{tsTask,jdbcType=VARCHAR},
+      ts_content = #{tsContent,jdbcType=VARCHAR},
+      ts_executor = #{tsExecutor,jdbcType=INTEGER},
+      ts_affiliated = #{tsAffiliated,jdbcType=VARCHAR},
+      ts_initiator = #{tsInitiator,jdbcType=INTEGER},
+      ts_status = #{tsStatus,jdbcType=INTEGER},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

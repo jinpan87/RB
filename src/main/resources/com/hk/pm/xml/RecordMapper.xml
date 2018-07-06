@@ -1,0 +1,648 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hk.pm.dao.RecordMapper" >
+  <resultMap id="BaseResultMap" type="com.hk.pm.entity.Record" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <id column="r_uid" property="rUid" jdbcType="INTEGER" />
+    <result column="r_kssj" property="rKssj" jdbcType="TIMESTAMP" />
+    <result column="r_jssj" property="rJssj" jdbcType="TIMESTAMP" />
+    <result column="r_gs" property="rGs" jdbcType="VARCHAR" />
+    <result column="r_xmlb" property="rXmlb" jdbcType="VARCHAR" />
+    <result column="r_xmmc" property="rXmmc" jdbcType="VARCHAR" />
+    <result column="r_xmbh" property="rXmbh" jdbcType="VARCHAR" />
+    <result column="r_xmjd" property="rXmjd" jdbcType="VARCHAR" />
+    <result column="r_xxgz" property="rXxgz" jdbcType="VARCHAR" />
+    <result column="r_wcqk" property="rWcqk" jdbcType="VARCHAR" />
+    <result column="r_bxje" property="rBxje" jdbcType="VARCHAR" />
+    <result column="r_fphsw" property="rFphsw" jdbcType="VARCHAR" />
+    <result column="r_kpdw" property="rKpdw" jdbcType="VARCHAR" />
+    <result column="r_createdate" property="rCreatedate" jdbcType="VARCHAR" />
+    <result column="r_state" property="rState" jdbcType="VARCHAR" />
+    <result column="r_zpf" property="rZpf" jdbcType="VARCHAR" />
+    <result column="r_spf" property="rSpf" jdbcType="VARCHAR" />
+    <result column="r_csmc" property="rCsmc" jdbcType="VARCHAR" />
+    <result column="r_qxmc" property="rQxmc" jdbcType="VARCHAR" />
+    <result column="r_khdw" property="rKhdw" jdbcType="VARCHAR" />
+    <result column="r_bfry" property="rBfry" jdbcType="VARCHAR" />
+    <result column="r_bffs" property="rBffs" jdbcType="VARCHAR" />
+    <result column="r_bfsj" property="rBfsj" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, r_uid, DATE_FORMAT(r_kssj,'%Y-%m-%d %H:%i:%s') as 'r_kssj', DATE_FORMAT(r_jssj,'%Y-%m-%d %H:%i:%s') as 'r_jssj', r_gs, r_xmlb, r_xmmc, r_xmbh, r_xmjd, r_xxgz, r_wcqk, 
+    r_bxje, r_fphsw, r_kpdw, r_createdate, r_state, r_zpf, r_spf, r_csmc, r_qxmc, r_khdw, 
+    r_bfry, r_bffs, r_bfsj
+  </sql>
+  
+  <!-- 列表展示字段 -->
+  <sql id="show_list">
+  r.id as 'id',u.RealName as 'realName',DATE_FORMAT(r.r_kssj,'%Y-%m-%d %H:%i:%s') as 'kssj',DATE_FORMAT(r.r_jssj,'%Y-%m-%d %H:%i:%s') as 'jssj',r.r_gs as 'gs',r.r_xxgz as 'xxgz' ,r.r_xmlb as 'xmlb',r.r_xmmc as 'xmmc',
+  r.r_xmbh as 'xmbh',r.r_xmjd as 'xmjd', r.r_wcqk as 'wcqk',DATE_FORMAT(r.r_createdate,'%Y-%m-%d %H:%i:%s')  as 'createDate',case r.r_state  WHEN '0' THEN '未审批' ELSE r.r_state end  as 'state' 
+  </sql>
+  
+  <!-- 项目个人统计字段 -->
+ <sql id="column_statistic_person">
+ CONVERT(SUM(r.r_gs),DECIMAL) as 'gs',CONVERT(SUM(r.r_bxje),DECIMAL) as 'bxje',u.RealName as 'name'
+ </sql>
+  
+  <!-- 展示列表查询条件 -->
+  <sql id="where_show_list">
+  where 1=1
+  <if test="rUid !=null">
+  and r.r_uid=${rUid }
+  </if>
+  <if test="roleId !=null">
+  and u.permission=${roleId }
+  </if>
+  <if test="name !=null and name !=''">
+  and u.RealName=#{name }
+  </if>
+  <if test="state !=null and state !=''">
+  and case  when #{state }='0' then r.r_state='0'
+  else r.r_state !='0' end
+  </if>
+  </sql>
+  
+  <!-- 统计条件查询 -->
+  <sql id="where_statistic">
+  where 1=1
+  <if test="rXmbh !=null and rXmbh !=''">
+  and r_xmbh=#{rXmbh}
+  </if>
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 日报查询 -->
+  <select id="selectRecordList" resultType="java.util.Map" parameterType="java.util.Map">
+  SELECT 
+  <include refid="show_list"/>
+  from t_record r LEFT JOIN t_users u on r.r_uid=u.ID
+  <include refid="where_show_list"/>
+  </select>
+  
+  <!-- 项目统计查询每个人的工时和金额 -->
+  <select id="selectStatisticByPerson" parameterType="com.hk.pm.entity.Record" resultType="java.util.Map">
+  select
+  <include refid="column_statistic_person"/>
+  from t_record r LEFT JOIN t_users u on r.r_uid=u.id
+  <include refid="where_statistic"/>
+  GROUP  BY r.r_uid;
+  </select>
+  
+  <!-- 项目统计总工时和金额 -->
+  <select id="selectStatistic" parameterType="com.hk.pm.entity.Record" resultType="java.util.Map">
+  select
+    CONVERT(SUM(r.r_gs),DECIMAL) as 'gs',CONVERT(SUM(r.r_bxje),DECIMAL) as 'bxje'
+  from t_record r 
+  where 1=1 
+  <if test="rXmbh !=null and rXmbh !=''">
+  and r.r_xmbh=#{rXmbh}
+  </if>
+  </select>
+  
+  <!-- 项目汇总信息列表 -->
+  <select id="selectStatisticMessage" parameterType="com.hk.pm.entity.Record" resultType="java.util.Map">
+  select
+  r.id as 'id',u.RealName as 'realName' ,DATE_FORMAT(r.r_kssj,'%Y-%m-%d %H:%i:%s') as 'kssj',r.r_gs as 'gs',
+  r.r_xmlb as 'xmlb',r.r_xmjd as 'xmjd',r.r_wcqk as 'wcqk', IFNULL(r.r_bxje,'0') as 'bxje'
+  from t_record r LEFT JOIN t_users u on r.r_uid=u.id 
+  where 1=1
+  <if test="rXmbh !=null and rXmbh !=''">
+  and r.r_xmbh=#{rXmbh}
+  </if>
+  </select>
+  
+  <!-- 三天以内需要拜访的日报查询 -->
+  <select id="selectByBfsj" parameterType="com.hk.pm.entity.Record" resultType="java.util.Map">
+  select
+  <include refid="show_list"/>
+  from t_record r LEFT JOIN t_users u on r.r_uid=u.ID where TIMESTAMPDIFF(DAY,r.r_bfsj,NOW())&lt;3 
+  <if test="rUid !=null and rUid !=''">
+  AND r.r_uid=#{rUid}
+  </if>
+  </select>
+  
+  <!-- 一周内没有日报的项目 -->
+ <select id="selectByWeek" resultType="java.util.Map" parameterType="java.util.Map">
+  SELECT a.code as 'code',a.manager as 'manager' from 
+ (SELECT p.p_code as 'code',r.r_xmbh as 'xmbh',p.p_manager as 'manager' from t_record r 
+ RIGHT  JOIN s_project_base p ON r.r_xmbh=p.p_code AND  TIMESTAMPDIFF(DAY,r.r_createdate,NOW())&lt;7 where p.p_state=0) a 
+ where a.xmbh is NULL
+ <if test="manager !=null">
+ and a.manager=#{manager}
+ </if>
+ </select>
+ 
+ <!--一周内没有项目日报的项目的最近一次日报  -->
+ <select id="selectByCode" resultType="java.util.Map" parameterType="java.util.Map">
+  SELECT 
+<include refid="show_list"></include>
+  from t_record r LEFT JOIN t_users u on r.r_uid=u.ID 
+  where 1=1
+  <if test="code !=null and code !=''">
+  and r.r_xmbh=#{code}
+  </if>
+  ORDER BY r.r_createdate DESC LIMIT 0,1
+ </select>
+ 
+  <delete id="deleteByPrimaryKey" parameterType="map" >
+    delete from t_record
+    where id = #{id,jdbcType=INTEGER}
+      and r_uid = #{rUid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hk.pm.entity.Record" >
+    insert into t_record (id, r_uid, r_kssj, 
+      r_jssj, r_gs, r_xmlb, 
+      r_xmmc, r_xmbh, r_xmjd, 
+      r_xxgz, r_wcqk, r_bxje, 
+      r_fphsw, r_kpdw, r_createdate, 
+      r_state, r_zpf, r_spf, 
+      r_csmc, r_qxmc, r_khdw, 
+      r_bfry, r_bffs, r_bfsj
+      )
+    values (#{id,jdbcType=INTEGER}, #{rUid,jdbcType=INTEGER}, #{rKssj,jdbcType=TIMESTAMP}, 
+      #{rJssj,jdbcType=TIMESTAMP}, #{rGs,jdbcType=VARCHAR}, #{rXmlb,jdbcType=VARCHAR}, 
+      #{rXmmc,jdbcType=VARCHAR}, #{rXmbh,jdbcType=VARCHAR}, #{rXmjd,jdbcType=VARCHAR}, 
+      #{rXxgz,jdbcType=VARCHAR}, #{rWcqk,jdbcType=VARCHAR}, #{rBxje,jdbcType=VARCHAR}, 
+      #{rFphsw,jdbcType=VARCHAR}, #{rKpdw,jdbcType=VARCHAR}, #{rCreatedate,jdbcType=VARCHAR}, 
+      #{rState,jdbcType=VARCHAR}, #{rZpf,jdbcType=VARCHAR}, #{rSpf,jdbcType=VARCHAR}, 
+      #{rCsmc,jdbcType=VARCHAR}, #{rQxmc,jdbcType=VARCHAR}, #{rKhdw,jdbcType=VARCHAR}, 
+      #{rBfry,jdbcType=VARCHAR}, #{rBffs,jdbcType=VARCHAR}, #{rBfsj,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hk.pm.entity.Record" >
+    insert into t_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="rUid != null" >
+        r_uid,
+      </if>
+      <if test="rKssj != null" >
+        r_kssj,
+      </if>
+      <if test="rJssj != null" >
+        r_jssj,
+      </if>
+      <if test="rGs != null" >
+        r_gs,
+      </if>
+      <if test="rXmlb != null" >
+        r_xmlb,
+      </if>
+      <if test="rXmmc != null" >
+        r_xmmc,
+      </if>
+      <if test="rXmbh != null" >
+        r_xmbh,
+      </if>
+      <if test="rXmjd != null" >
+        r_xmjd,
+      </if>
+      <if test="rXxgz != null" >
+        r_xxgz,
+      </if>
+      <if test="rWcqk != null" >
+        r_wcqk,
+      </if>
+      <if test="rBxje != null" >
+        r_bxje,
+      </if>
+      <if test="rFphsw != null" >
+        r_fphsw,
+      </if>
+      <if test="rKpdw != null" >
+        r_kpdw,
+      </if>
+      <if test="rCreatedate != null" >
+        r_createdate,
+      </if>
+      <if test="rState != null" >
+        r_state,
+      </if>
+      <if test="rZpf != null" >
+        r_zpf,
+      </if>
+      <if test="rSpf != null" >
+        r_spf,
+      </if>
+      <if test="rCsmc != null" >
+        r_csmc,
+      </if>
+      <if test="rQxmc != null" >
+        r_qxmc,
+      </if>
+      <if test="rKhdw != null" >
+        r_khdw,
+      </if>
+      <if test="rBfry != null" >
+        r_bfry,
+      </if>
+      <if test="rBffs != null" >
+        r_bffs,
+      </if>
+      <if test="rBfsj != null" >
+        r_bfsj,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="rUid != null" >
+        #{rUid,jdbcType=INTEGER},
+      </if>
+      <if test="rKssj != null" >
+        #{rKssj,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rJssj != null" >
+        #{rJssj,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rGs != null" >
+        #{rGs,jdbcType=VARCHAR},
+      </if>
+      <if test="rXmlb != null" >
+        #{rXmlb,jdbcType=VARCHAR},
+      </if>
+      <if test="rXmmc != null" >
+        #{rXmmc,jdbcType=VARCHAR},
+      </if>
+      <if test="rXmbh != null" >
+        #{rXmbh,jdbcType=VARCHAR},
+      </if>
+      <if test="rXmjd != null" >
+        #{rXmjd,jdbcType=VARCHAR},
+      </if>
+      <if test="rXxgz != null" >
+        #{rXxgz,jdbcType=VARCHAR},
+      </if>
+      <if test="rWcqk != null" >
+        #{rWcqk,jdbcType=VARCHAR},
+      </if>
+      <if test="rBxje != null" >
+        #{rBxje,jdbcType=VARCHAR},
+      </if>
+      <if test="rFphsw != null" >
+        #{rFphsw,jdbcType=VARCHAR},
+      </if>
+      <if test="rKpdw != null" >
+        #{rKpdw,jdbcType=VARCHAR},
+      </if>
+      <if test="rCreatedate != null" >
+        #{rCreatedate,jdbcType=VARCHAR},
+      </if>
+      <if test="rState != null" >
+        #{rState,jdbcType=VARCHAR},
+      </if>
+      <if test="rZpf != null" >
+        #{rZpf,jdbcType=VARCHAR},
+      </if>
+      <if test="rSpf != null" >
+        #{rSpf,jdbcType=VARCHAR},
+      </if>
+      <if test="rCsmc != null" >
+        #{rCsmc,jdbcType=VARCHAR},
+      </if>
+      <if test="rQxmc != null" >
+        #{rQxmc,jdbcType=VARCHAR},
+      </if>
+      <if test="rKhdw != null" >
+        #{rKhdw,jdbcType=VARCHAR},
+      </if>
+      <if test="rBfry != null" >
+        #{rBfry,jdbcType=VARCHAR},
+      </if>
+      <if test="rBffs != null" >
+        #{rBffs,jdbcType=VARCHAR},
+      </if>
+      <if test="rBfsj != null" >
+        #{rBfsj,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <insert id="insertOrUpdateRecord" parameterType="com.hk.pm.entity.Record" >
+    insert into t_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="rUid != null" >
+        r_uid,
+      </if>
+      <if test="rKssj != null" >
+        r_kssj,
+      </if>
+      <if test="rJssj != null" >
+        r_jssj,
+      </if>
+      <if test="rGs != null" >
+        r_gs,
+      </if>
+      <if test="rXmlb != null" >
+        r_xmlb,
+      </if>
+      <if test="rXmmc != null" >
+        r_xmmc,
+      </if>
+      <if test="rXmbh != null" >
+        r_xmbh,
+      </if>
+      <if test="rXmjd != null" >
+        r_xmjd,
+      </if>
+      <if test="rXxgz != null" >
+        r_xxgz,
+      </if>
+      <if test="rWcqk != null" >
+        r_wcqk,
+      </if>
+      <if test="rBxje != null" >
+        r_bxje,
+      </if>
+      <if test="rFphsw != null" >
+        r_fphsw,
+      </if>
+      <if test="rKpdw != null" >
+        r_kpdw,
+      </if>
+      <if test="rCreatedate != null" >
+        r_createdate,
+      </if>
+      <if test="rState != null" >
+        r_state,
+      </if>
+      <if test="rZpf != null" >
+        r_zpf,
+      </if>
+      <if test="rSpf != null" >
+        r_spf,
+      </if>
+      <if test="rCsmc != null" >
+        r_csmc,
+      </if>
+      <if test="rQxmc != null" >
+        r_qxmc,
+      </if>
+      <if test="rKhdw != null" >
+        r_khdw,
+      </if>
+      <if test="rBfry != null" >
+        r_bfry,
+      </if>
+      <if test="rBffs != null" >
+        r_bffs,
+      </if>
+      <if test="rBfsj != null" >
+        r_bfsj,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="rUid != null" >
+        #{rUid,jdbcType=INTEGER},
+      </if>
+      <if test="rKssj != null" >
+        #{rKssj,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rJssj != null" >
+        #{rJssj,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rGs != null" >
+        #{rGs,jdbcType=VARCHAR},
+      </if>
+      <if test="rXmlb != null" >
+        #{rXmlb,jdbcType=VARCHAR},
+      </if>
+      <if test="rXmmc != null" >
+        #{rXmmc,jdbcType=VARCHAR},
+      </if>
+      <if test="rXmbh != null" >
+        #{rXmbh,jdbcType=VARCHAR},
+      </if>
+      <if test="rXmjd != null" >
+        #{rXmjd,jdbcType=VARCHAR},
+      </if>
+      <if test="rXxgz != null" >
+        #{rXxgz,jdbcType=VARCHAR},
+      </if>
+      <if test="rWcqk != null" >
+        #{rWcqk,jdbcType=VARCHAR},
+      </if>
+      <if test="rBxje != null" >
+        #{rBxje,jdbcType=VARCHAR},
+      </if>
+      <if test="rFphsw != null" >
+        #{rFphsw,jdbcType=VARCHAR},
+      </if>
+      <if test="rKpdw != null" >
+        #{rKpdw,jdbcType=VARCHAR},
+      </if>
+      <if test="rCreatedate != null" >
+        #{rCreatedate,jdbcType=VARCHAR},
+      </if>
+      <if test="rState != null" >
+        #{rState,jdbcType=VARCHAR},
+      </if>
+      <if test="rZpf != null" >
+        #{rZpf,jdbcType=VARCHAR},
+      </if>
+      <if test="rSpf != null" >
+        #{rSpf,jdbcType=VARCHAR},
+      </if>
+      <if test="rCsmc != null" >
+        #{rCsmc,jdbcType=VARCHAR},
+      </if>
+      <if test="rQxmc != null" >
+        #{rQxmc,jdbcType=VARCHAR},
+      </if>
+      <if test="rKhdw != null" >
+        #{rKhdw,jdbcType=VARCHAR},
+      </if>
+      <if test="rBfry != null" >
+        #{rBfry,jdbcType=VARCHAR},
+      </if>
+      <if test="rBffs != null" >
+        #{rBffs,jdbcType=VARCHAR},
+      </if>
+      <if test="rBfsj != null" >
+        #{rBfsj,jdbcType=VARCHAR},
+      </if>
+    </trim>
+     <trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides="," >
+      <if test="rKssj != null" >
+        r_kssj = #{rKssj,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rJssj != null" >
+        r_jssj = #{rJssj,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rGs != null" >
+        r_gs = #{rGs,jdbcType=VARCHAR},
+      </if>
+      <if test="rXmlb != null" >
+        r_xmlb = #{rXmlb,jdbcType=VARCHAR},
+      </if>
+      <if test="rXmmc != null" >
+        r_xmmc = #{rXmmc,jdbcType=VARCHAR},
+      </if>
+      <if test="rXmbh != null" >
+        r_xmbh = #{rXmbh,jdbcType=VARCHAR},
+      </if>
+      <if test="rXmjd != null" >
+        r_xmjd = #{rXmjd,jdbcType=VARCHAR},
+      </if>
+      <if test="rXxgz != null" >
+        r_xxgz = #{rXxgz,jdbcType=VARCHAR},
+      </if>
+      <if test="rWcqk != null" >
+        r_wcqk = #{rWcqk,jdbcType=VARCHAR},
+      </if>
+      <if test="rBxje != null" >
+        r_bxje = #{rBxje,jdbcType=VARCHAR},
+      </if>
+      <if test="rFphsw != null" >
+        r_fphsw = #{rFphsw,jdbcType=VARCHAR},
+      </if>
+      <if test="rKpdw != null" >
+        r_kpdw = #{rKpdw,jdbcType=VARCHAR},
+      </if>
+      <if test="rCreatedate != null" >
+        r_createdate = #{rCreatedate,jdbcType=VARCHAR},
+      </if>
+      <if test="rState != null" >
+        r_state = #{rState,jdbcType=VARCHAR},
+      </if>
+      <if test="rZpf != null" >
+        r_zpf = #{rZpf,jdbcType=VARCHAR},
+      </if>
+      <if test="rSpf != null" >
+        r_spf = #{rSpf,jdbcType=VARCHAR},
+      </if>
+      <if test="rCsmc != null" >
+        r_csmc = #{rCsmc,jdbcType=VARCHAR},
+      </if>
+      <if test="rQxmc != null" >
+        r_qxmc = #{rQxmc,jdbcType=VARCHAR},
+      </if>
+      <if test="rKhdw != null" >
+        r_khdw = #{rKhdw,jdbcType=VARCHAR},
+      </if>
+      <if test="rBfry != null" >
+        r_bfry = #{rBfry,jdbcType=VARCHAR},
+      </if>
+      <if test="rBffs != null" >
+        r_bffs = #{rBffs,jdbcType=VARCHAR},
+      </if>
+      <if test="rBfsj != null" >
+        r_bfsj = #{rBfsj,jdbcType=VARCHAR},
+      </if>
+     </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hk.pm.entity.Record" >
+    update t_record
+    <set >
+      <if test="rKssj != null" >
+        r_kssj = #{rKssj,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rJssj != null" >
+        r_jssj = #{rJssj,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rGs != null" >
+        r_gs = #{rGs,jdbcType=VARCHAR},
+      </if>
+      <if test="rXmlb != null" >
+        r_xmlb = #{rXmlb,jdbcType=VARCHAR},
+      </if>
+      <if test="rXmmc != null" >
+        r_xmmc = #{rXmmc,jdbcType=VARCHAR},
+      </if>
+      <if test="rXmbh != null" >
+        r_xmbh = #{rXmbh,jdbcType=VARCHAR},
+      </if>
+      <if test="rXmjd != null" >
+        r_xmjd = #{rXmjd,jdbcType=VARCHAR},
+      </if>
+      <if test="rXxgz != null" >
+        r_xxgz = #{rXxgz,jdbcType=VARCHAR},
+      </if>
+      <if test="rWcqk != null" >
+        r_wcqk = #{rWcqk,jdbcType=VARCHAR},
+      </if>
+      <if test="rBxje != null" >
+        r_bxje = #{rBxje,jdbcType=VARCHAR},
+      </if>
+      <if test="rFphsw != null" >
+        r_fphsw = #{rFphsw,jdbcType=VARCHAR},
+      </if>
+      <if test="rKpdw != null" >
+        r_kpdw = #{rKpdw,jdbcType=VARCHAR},
+      </if>
+      <if test="rCreatedate != null" >
+        r_createdate = #{rCreatedate,jdbcType=VARCHAR},
+      </if>
+      <if test="rState != null" >
+        r_state = #{rState,jdbcType=VARCHAR},
+      </if>
+      <if test="rZpf != null" >
+        r_zpf = #{rZpf,jdbcType=VARCHAR},
+      </if>
+      <if test="rSpf != null" >
+        r_spf = #{rSpf,jdbcType=VARCHAR},
+      </if>
+      <if test="rCsmc != null" >
+        r_csmc = #{rCsmc,jdbcType=VARCHAR},
+      </if>
+      <if test="rQxmc != null" >
+        r_qxmc = #{rQxmc,jdbcType=VARCHAR},
+      </if>
+      <if test="rKhdw != null" >
+        r_khdw = #{rKhdw,jdbcType=VARCHAR},
+      </if>
+      <if test="rBfry != null" >
+        r_bfry = #{rBfry,jdbcType=VARCHAR},
+      </if>
+      <if test="rBffs != null" >
+        r_bffs = #{rBffs,jdbcType=VARCHAR},
+      </if>
+      <if test="rBfsj != null" >
+        r_bfsj = #{rBfsj,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+      
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hk.pm.entity.Record" >
+    update t_record
+    set 
+      r_kssj = #{rKssj,jdbcType=TIMESTAMP},
+      r_jssj = #{rJssj,jdbcType=TIMESTAMP},
+      r_gs = #{rGs,jdbcType=VARCHAR},
+      r_xmlb = #{rXmlb,jdbcType=VARCHAR},
+      r_xmmc = #{rXmmc,jdbcType=VARCHAR},
+      r_xmbh = #{rXmbh,jdbcType=VARCHAR},
+      r_xmjd = #{rXmjd,jdbcType=VARCHAR},
+      r_xxgz = #{rXxgz,jdbcType=VARCHAR},
+      r_wcqk = #{rWcqk,jdbcType=VARCHAR},
+      r_bxje = #{rBxje,jdbcType=VARCHAR},
+      r_fphsw = #{rFphsw,jdbcType=VARCHAR},
+      r_kpdw = #{rKpdw,jdbcType=VARCHAR},
+      r_createdate = #{rCreatedate,jdbcType=VARCHAR},
+      r_state = #{rState,jdbcType=VARCHAR},
+      r_zpf = #{rZpf,jdbcType=VARCHAR},
+      r_spf = #{rSpf,jdbcType=VARCHAR},
+      r_csmc = #{rCsmc,jdbcType=VARCHAR},
+      r_qxmc = #{rQxmc,jdbcType=VARCHAR},
+      r_khdw = #{rKhdw,jdbcType=VARCHAR},
+      r_bfry = #{rBfry,jdbcType=VARCHAR},
+      r_bffs = #{rBffs,jdbcType=VARCHAR},
+      r_bfsj = #{rBfsj,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+      and r_uid = #{rUid,jdbcType=INTEGER}
+  </update>
+</mapper>
