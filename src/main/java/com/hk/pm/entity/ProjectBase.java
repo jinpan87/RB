@@ -1,7 +1,5 @@
 package com.hk.pm.entity;
 
-import java.util.Date;
-
 import org.apache.ibatis.type.Alias;
 /**
  * 项目
@@ -143,12 +141,12 @@ public class ProjectBase {
     /**
      * 创建时间
      */
-    private Date createTime;
+    private String createTime;
 
     /**
      * 项目启动日期
      */
-    private Date startTime;
+    private String startTime;
 
     /**
      * 是否结项，0：否；1：是
@@ -163,7 +161,7 @@ public class ProjectBase {
     /**
      * 更新日期
      */
-    private Date updateTime;
+    private String updateTime;
 
     /**
      * 
@@ -585,7 +583,7 @@ public class ProjectBase {
      * 创建时间
      * @return create_time 创建时间
      */
-    public Date getCreateTime() {
+    public String getCreateTime() {
         return createTime;
     }
 
@@ -593,7 +591,7 @@ public class ProjectBase {
      * 创建时间
      * @param createTime 创建时间
      */
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
 
@@ -601,7 +599,7 @@ public class ProjectBase {
      * 项目启动日期
      * @return start_time 项目启动日期
      */
-    public Date getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
 
@@ -609,7 +607,7 @@ public class ProjectBase {
      * 项目启动日期
      * @param startTime 项目启动日期
      */
-    public void setStartTime(Date startTime) {
+    public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
 
@@ -649,7 +647,7 @@ public class ProjectBase {
      * 更新日期
      * @return update_time 更新日期
      */
-    public Date getUpdateTime() {
+    public String getUpdateTime() {
         return updateTime;
     }
 
@@ -657,7 +655,55 @@ public class ProjectBase {
      * 更新日期
      * @param updateTime 更新日期
      */
-    public void setUpdateTime(Date updateTime) {
+    public void setUpdateTime(String updateTime) {
         this.updateTime = updateTime;
     }
+
+	public ProjectBase(Long id, String pCode, Integer pType, String pName, String pGrew, String pManager,
+			String pSummary, String pAfterManager, String pProvince, String pCity, String pCounty, String pScode,
+			String pSname, String pSourceFund, Integer pReady, String pOriginalContractor, String pSummarize,
+			Float pMoney, String pProduct, String pCheck, String pProgress, Float pPlanAmount, String pPlanMake,
+			String pWrittenDay, String pCustomerCode, String pRivalCode, String createTime, String startTime,
+			Integer pState, String pOverCause, String updateTime) {
+		super();
+		this.id = id;
+		this.pCode = pCode;
+		this.pType = pType;
+		this.pName = pName;
+		this.pGrew = pGrew;
+		this.pManager = pManager;
+		this.pSummary = pSummary;
+		this.pAfterManager = pAfterManager;
+		this.pProvince = pProvince;
+		this.pCity = pCity;
+		this.pCounty = pCounty;
+		this.pScode = pScode;
+		this.pSname = pSname;
+		this.pSourceFund = pSourceFund;
+		this.pReady = pReady;
+		this.pOriginalContractor = pOriginalContractor;
+		this.pSummarize = pSummarize;
+		this.pMoney = pMoney;
+		this.pProduct = pProduct;
+		this.pCheck = pCheck;
+		this.pProgress = pProgress;
+		this.pPlanAmount = pPlanAmount;
+		this.pPlanMake = pPlanMake;
+		this.pWrittenDay = pWrittenDay;
+		this.pCustomerCode = pCustomerCode;
+		this.pRivalCode = pRivalCode;
+		this.createTime = createTime;
+		this.startTime = startTime;
+		this.pState = pState;
+		this.pOverCause = pOverCause;
+		this.updateTime = updateTime;
+	}
+
+	public ProjectBase() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	
+    
 }

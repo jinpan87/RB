@@ -1,5 +1,8 @@
 package com.hk.pm.dao;
 
+import java.util.List;
+import java.util.Map;
+
 import com.hk.pm.entity.Client;
 
 public interface ClientMapper {
@@ -26,6 +29,8 @@ public interface ClientMapper {
      * @mbggenerated 2018-05-24
      */
     Client selectByPrimaryKey(Long id);
+    
+    List<Map> selectClientListByCode(Map map);//查询接口人和决策人信息
 
     /**
      *

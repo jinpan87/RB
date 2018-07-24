@@ -10,23 +10,23 @@
 
 		 	<form id="search_user" class="form-horizontal" role="form">
 				<div class="form-group">
-					<div class="col-sm-2">
+					<!-- <div class="col-sm-2">
 						<label><input type="radio" value="0" name="radio" >未审核</label>
 						<label><input type="radio" value="1" name="radio">已审核</label>
 						<label><input type="radio" value="" name="radio">全部</label>
-					</div>
-					<label for="roleName" class="col-sm-2 control-label">姓名：</label>
+					</div> -->
+					<!-- <label for="roleName" class="col-sm-2 control-label">姓名：</label>
 					<div class="col-sm-2">
 						<input type="text" value="" id="userName">
-					</div>
+					</div> -->
 					<div class="col-sm-3">
 					
 					<!-- <button class="btn btn-primary " data-toggle="modal" data-target="#myModal" onclick="addproject()">立项</button> -->
-						&nbsp;&nbsp;&nbsp;&nbsp;
+						<!-- &nbsp;&nbsp;&nbsp;&nbsp;
 						&nbsp;&nbsp;&nbsp;&nbsp;
 						 <a class="btn btn-primary" href="javascript:queryRecord();">
 		              <i class="fa fa-plus"></i> 查询
-		            </a> 
+		            </a>  -->
 					</div>
 				</div>
 			</form>
@@ -65,11 +65,10 @@ pageSetUp();
    	        	obj.options[i].selected = 'selected';  
    	    }
  }--%>
- var queryRecord=function(id){
+ var queryRecord=function(){
 	 /*name是条件查询名称  */
-	var name=document.getElementById("userName").value
+	/* var name=document.getElementById("userName").value */
 	/* alert("name"+name); */
-	document.get
 	var radios=document.getElementsByName("radio");
 	var state="";
 	for(var i=0;i<radios.length;i++){
@@ -82,7 +81,7 @@ pageSetUp();
 		   }
 	}
 	console.log("${roleId}");
-	$.post("daily/dailyCheck2.do",{name:name,state:state,userName:"${userName}",roleId:"${roleId}",userId:"${userId}"},function(data){
+	$.post("daily/queryDailyByState.do",{state:state,roleId:"${roleId}",userId:"${userId}"},function(data){
 		$('#width_jqgrid').html(data);
 		  
 	});
@@ -92,12 +91,12 @@ pageSetUp();
 	var userId='${userId}';
 	var roleId='${roleId}';
 	window.location.hash="daily/updateDaily.do?id="+id;
-	
  }
  
- /* var showRow=function(id){
-	 window.location.hash="showProject.do?id="+id;
+  var showRow=function(uid){
+	 window.location.hash="daily/showdailyListByUserId.do?uid="+uid+"&userId=${userId}&roleId=${roleId}";
  }
+  /*
  var deleteRow=function(id){
 	 window.location.hash="deleteProject.do?id="+id;
  }  */
@@ -129,7 +128,6 @@ var pagefunction = function() {
 		                  timeout : 4000
 		                });
 		                var s = Math.random();
-		               <%--  window.location.hash="<%=basePath%>/mediaWords/queryMediaList.jhtml?s="+s; --%>
 		              } else {
 		                $.smallBox({
 		                  title : "出错信息",
@@ -162,10 +160,12 @@ var pagefunction = function() {
 			data : jqgrid_data,
 			datatype : "local",
 			height : 'auto',
-			colNames : ['修改','编号','姓名','开始时间','结束时间','工时','工作内容','项目类别','项目名称','项目编号','项目阶段','完成情况','填写时间','审批人'],		
+			colNames : ['修改','编号','用户ID','姓名','开始时间','结束时间','工时','工作内容','项目类别','项目名称','项目编号','项目阶段','完成情况','填写时间','审批人',
+			            '城市名称','区县名称','拜访单位','拜访人','拜访方式','拜访时间'],		
 			colModel : [
 						{ name : 'act', index:'act',width:80,hidden:false }, 
-						{ name : 'id', index:'id',width:80,hidden:false }, 
+						{ name : 'id', index:'id',width:80,hidden:true }, 
+						{ name : 'uid', index:'uid',width:80,hidden:true }, 
 						{ name : 'realName', index : 'realName', hidden : false },
 						{ name : 'kssj', index : 'kssj' },
 						{ name : 'jssj', index : 'jssj' },
@@ -178,6 +178,12 @@ var pagefunction = function() {
 						{ name : 'wcqk', index : 'wcqk' },
 						{ name : 'createDate', index : 'createDate' },
 						{ name : 'state', index : 'state' },
+						{ name : 'csmc', index : 'csmc' },
+						{ name : 'qxmc', index : 'qxmc' },
+						{ name : 'khdw', index : 'khdw' },
+						{ name : 'bfry', index : 'bfry' },
+						{ name : 'bffs', index : 'bffs' },
+						{ name : 'bfsj', index : 'bfsj' },
 						
 					  ], 	
 			rowNum : 10,
@@ -191,20 +197,27 @@ var pagefunction = function() {
 			sortname : 'createDate',
 			toolbarfilter: true,
 			viewrecords : true,
+			shrinkToFit:false,
+			autoScroll: false,
 			sortorder : "desc",
 			gridComplete: function(){
 				var ids = jQuery("#jqgrid").jqGrid('getDataIDs');
-				//var typeCode=document.getElementById("projecttyep").value;
 				for(var i=0;i < ids.length;i++){
 					var cl = ids[i];
 					var item = $("#jqgrid").jqGrid('getRowData', cl);
 				    var id = item.id;
+				    var uid = item.uid;
+				    var state = item.state;
 					be = "<button class='btn btn-xs btn-default' title='修改' onclick=\"editRow('"+id+"');\"><i class='fa fa-pencil'></i></button>"; 
 					se = "<button class='btn btn-xs btn-default' title='删除' onclick=\"deleteRow('"+id+"');\"><i class='fa fa-times'></i></button>";
-					ss = "<button class='btn btn-xs btn-default' title='查看详情' onclick=\"showRow('"+id+"');\"><i class='fa fa-search'></i></button>";
+					ss = "<button class='btn btn-xs btn-default' title='查看详情' onclick=\"showRow('"+uid+"');\"><i class='fa fa-search'></i></button>";
 					ce = "<button class='btn btn-xs btn-default' title='添加' onclick=\"addproject('"+id+"');\"><i class='fa fa-lock'></i></button>";
-					//jQuery("#jqgrid").jqGrid('setRowData',ids[i],{act:be+se+ce});
-					jQuery("#jqgrid").jqGrid('setRowData',ids[i],{act:be});
+					var userId='${userId}';
+					if(state=='未审批'&&userId==uid){
+						jQuery("#jqgrid").jqGrid('setRowData',ids[i],{act:be+ss});
+					}else{
+						jQuery("#jqgrid").jqGrid('setRowData',ids[i],{act:ss});
+					}
 				}	
 			},
 			caption : "日报列表",				

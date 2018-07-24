@@ -10,7 +10,8 @@ public interface DailyService {
 	Map<String,Object> getDailyMessage(Map map);//添加日报初始化信息
 	List<County> getCountyList(int cityId);
 	void addRecord(Record record);//添加日报
-	List<Map> queryRecordList(Map map);//查询个人日报信息
+	List<Map> queryRecordList(Map map);//查询每个人最新的一条日报
+	List<Map> queryRecordListByUserId(Map map);//查询个人日报信息
 	List<Map> queryCheckList(Map map);//条件查询审批未审批的列表
 	void updateRecord(Record record);//更新日报
 	Map<String,Object> getStatisticProject(Record record);//获得项目统计信息

@@ -6,7 +6,12 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 <!-- <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> -->
+  <!-- [if lt IE 9]>
+  <script src="lib/js/html5shiv.js"></script>
+  <script src="lib/js/respond.js"></script>
+  <![endif]-->
 
 <title>日报管理系统</title>
 <meta name="description" content="">
@@ -115,7 +120,6 @@ article, aside, dialog, footer, header, section, footer, nav, figure,
 	<script src="lib/smartadmin/js/plugin/pace/pace.min.js"></script>
 
 	<!-- Link to Google CDN's jQuery + jQueryUI; fall back to local -->
-	<!--  <script src="lib/jquery/jquery-1.11.1.js"></script> -->
 	<script src="lib/jquery/jquery-2.1.1.min.js"></script>
 
 	<script src="lib/smartadmin/js/libs/jquery-ui-1.10.3.min.js"></script>
@@ -161,33 +165,5 @@ article, aside, dialog, footer, header, section, footer, nav, figure,
 
 	<!-- MAIN APP JS FILE -->
 	<script src="lib/smartadmin/js/app.js"></script>
-	<!-- <script src="lib/js/laydate/laydate.js"></script> -->
-	<script type="text/javascript">
-	 /* var pagefunction = function() {
-		  
-	      $("#loginForm").validate({
-	    	  
-	        submitHandler: function(form) {
-	        	var uname = $("#uname").val();
-	        	var pwd = $("#pwd").val();
-	        	var users='{"uname":uname,"pwd":pwd}';
-	        	
-					$.post("loginCheck.do", {"uname":uname,"pwd":pwd},function(data){
-						/* alert(data.code);
-						alert("添加成功");
-						alert(data.users.uname+data.users.pwd); */
-						/* if(data.code==0){
-							window.location.href="login.do";
-						}else{
-							alert(data.msg);
-						} 
-					 });
-	        }
-					});
-	    	} */
-			    			
-		
-	 	/* pagefunction();  */
-	</script>
 </body>
 </html>

@@ -1,9 +1,11 @@
 package com.hk.pm.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,6 +20,7 @@ import com.hk.pm.entity.BaseObject;
 import com.hk.pm.entity.Contract;
 import com.hk.pm.entity.ProjectBase;
 import com.hk.pm.entity.ReturnMoney;
+import com.hk.pm.entity.utilEntity.UtilProject;
 import com.hk.pm.service.ProjectService;
 import com.hk.pm.util.R;
 
@@ -150,20 +153,6 @@ public class ProjectController extends BaseController {
 	public R addProject(HttpServletResponse response,HttpServletRequest request,ProjectBase project){
 		projectService.addProject(project);
 		return R.ok("添加成功");
-		/*String pCode=request.getParameter("pCode");
-		String[] arrayCode=pCode.split("-");
-		String typeCode=arrayCode[1];
-		ModelAndView modelAndView=new ModelAndView("jsp/smartadmin/project/projectList.jsp");
-		Map<String,Object> map=new HashMap<String,Object>();
-		map=ProjectController.map;
-		map.put("typeCode", typeCode);
-		List<Map> list=new ArrayList<Map>();
-		list=projectService.queryProjectList(map);
-		if(list==null){
-			return null;
-		}else{
-			return getModel(list,modelAndView);
-		}*/
 	}
 	@RequestMapping(value="addProjectHK.do")//执行添加回款、售后任务
 	public R addProjectHK(HttpServletResponse response,HttpServletRequest request,BaseObject baseObject){
@@ -307,4 +296,113 @@ public class ProjectController extends BaseController {
 		return modelAndView;
 	}
 	
+	//项目进度管理列表信息查询
+	@RequestMapping(value="project/queryProjectProgressManagerList.do")
+	public ModelAndView queryProjectProgressManagerList(HttpServletResponse response,HttpServletRequest request){
+		ModelAndView modelAndView =new ModelAndView("jsp/smartadmin/project/projectProgressManager.jsp");
+		List<Map> list=new ArrayList<Map>();
+		list=projectService.queryProjectProgressManagerList(null);
+		JSONArray jsonArray=JSONArray.fromObject(list);
+		modelAndView.addObject("data", jsonArray);
+		return modelAndView;
+	}
+	//项目进度管理列表信息查询
+	@RequestMapping(value="project/projectProgressManager/type.do")
+	public ModelAndView queryProjectProgressManagerListByTypeId(HttpServletResponse response,HttpServletRequest request){
+		ModelAndView modelAndView =new ModelAndView("jsp/smartadmin/project/projectProgressManager.jsp");
+		Map<String,Object> map=new HashMap<String,Object>();
+		String typeId=request.getParameter("typeId");
+		typeId=Optional.ofNullable(typeId)
+				.map(String->request.getParameter("typeId"))
+				.orElse("1");
+		map.put("typeId", typeId);
+		List<Map> list=new ArrayList<Map>();
+		list=projectService.queryProjectProgressManagerList(map);
+		JSONArray jsonArray=JSONArray.fromObject(list);
+		JSONObject json=JSONObject.fromObject(map);
+		modelAndView.addObject("data", jsonArray);
+		modelAndView.addObject("json",json);
+		return modelAndView;
+	}
+	
+	//项目进度管理更新
+	@RequestMapping(value="project/editProject.do")
+	public R editProject(HttpServletResponse response,HttpServletRequest request,UtilProject utilProject){
+		Map<String,Object> map=new HashMap<String,Object>();
+		map=utilProjectToProjectBase(utilProject);
+		String oper=utilProject.getOper();
+		
+		switch (oper) {
+		case "add":
+			projectService.addProject(map);
+			break;
+		case "edit":
+			projectService.upProject(map);
+			break;
+		case "del":
+			
+			break;
+
+		default:
+			break;
+		}
+		return R.ok();
+	}
+	
+	//项目进度管理选择区域
+	@RequestMapping(value="project/selectCounty.do")
+	public R selectCounty(HttpServletResponse response,HttpServletRequest request,UtilProject utilProject){
+		String oper=utilProject.getOper();
+		switch (oper) {
+		case "add":
+			
+			break;
+		case "edit":
+			
+			break;
+		case "del":
+			
+			break;
+			
+		default:
+			break;
+		}
+		String typeName=request.getParameter("typeName");
+		System.out.println("data:"+oper+"typeName:"+typeName);
+		return R.ok();
+	}
+	
+	//获取客户单位下拉列表框
+	@RequestMapping(value="project/getCustomerCodeList.do")
+	public R getCustomerCodeList(HttpServletResponse response,HttpServletRequest request){
+		Map<String,Object> map=new HashMap<String,Object>();
+		List<Map> list=new ArrayList<Map>();
+		list=projectService.queryClientList(null);
+		JSONArray jsonArray=JSONArray.fromObject(list);
+		map.put("jsonArray", jsonArray);
+		return R.ok(map);
+	}
+	//获取客户单位下拉列表框
+	@RequestMapping(value="project/queryCustomerMsg.do")
+	public R queryCustomerMsg(HttpServletResponse response,HttpServletRequest request){
+		Map<String,Object> map=new HashMap<String,Object>();
+		Map<String,Object> mapp=new HashMap<String,Object>();
+		List<Map> list=new ArrayList<Map>();
+		String cCode=request.getParameter("customerId");
+		mapp.put("cCode", cCode);
+		list=projectService.queryClientList(mapp);
+		JSONArray jsonArray=JSONArray.fromObject(list);
+		map.put("jsonArray", jsonArray);
+		return R.ok(map);
+	}
+	
+	@RequestMapping(value="project/getTypeList.do")
+	public R getTypeList(HttpServletResponse response,HttpServletRequest request){
+		List<Map> list=new ArrayList<Map>();
+		Map<String,Object> map=new HashMap<String,Object>();
+		list=projectService.queryTypeList(null);
+		JSONArray jsonArray=JSONArray.fromObject(list);
+		map.put("jsonArray", jsonArray);
+		return R.ok(map);
+	}
 }

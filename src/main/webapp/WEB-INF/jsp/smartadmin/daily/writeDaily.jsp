@@ -366,7 +366,7 @@ function a(){
 	
  }
  var selectTyep=function(str){
-	 var id = $("#id").val();
+	var id = $("#id").val();
 	var rUid = $("#rUid").val();
  	var rKssj = $("#rKssj").val()+'';
  	var rJssj = $("#rJssj").val()+'';

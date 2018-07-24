@@ -10,12 +10,15 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.hk.pm.dao.ClientMapper;
 import com.hk.pm.dao.ContractMapper;
 import com.hk.pm.dao.ProjectBaseMapper;
+import com.hk.pm.dao.ProjectProgressMapper;
 import com.hk.pm.dao.ReturnMoneyMapper;
 import com.hk.pm.dao.TypeMapper;
 import com.hk.pm.entity.Contract;
 import com.hk.pm.entity.ProjectBase;
+import com.hk.pm.entity.ProjectProgress;
 import com.hk.pm.entity.ReturnMoney;
 import com.hk.pm.service.ProjectService;
 import com.hk.pm.util.ReadConfig;
@@ -29,7 +32,13 @@ public class ProjectServiceImpl implements ProjectService{
 	ReturnMoneyMapper returnMoneyDao;
 	@Autowired
 	TypeMapper typeDao;
+	@Autowired
+	ProjectProgressMapper progressDao;
+	@Autowired
+	ClientMapper clientDao;
+	
 	SimpleDateFormat  sdf=new SimpleDateFormat("yyyyMMdd");
+	
 	@Override
 	public List<Map> queryProjectList(Map map) {
 		// TODO Auto-generated method stub
@@ -38,15 +47,20 @@ public class ProjectServiceImpl implements ProjectService{
 		return list;
 	}
 	@Override
-	public List<Map> queryTypeList() {
+	public List<Map> queryTypeList(Map map) {
 		// TODO Auto-generated method stub
-		return typeDao.selectList(null);
+		return typeDao.selectList(map);
 	}
 	@Override
 	public ProjectBase show(Map map) {
-		// TODO Auto-generated method stub
-		Map<String,Object> typeMap=new HashMap<String,Object>();
 		ProjectBase project=new ProjectBase();
+		String code=getProjectCode(map);
+		project.setpCode(code);
+		project.setpType(Integer.valueOf(map.get("typeId")+""));
+		return project;
+	}
+	public String getProjectCode(Map map){
+		Map<String,Object> typeMap=new HashMap<String,Object>();
 		Date date=new Date();
 		String dateStr=sdf.format(date);
 		String count=projectDao.selectCountByType(map)+1+"";
@@ -64,9 +78,7 @@ public class ProjectServiceImpl implements ProjectService{
 		List<Map> listtype=typeDao.selectList(typeMap);
 		String typeCode=listtype.get(0).get("code")+"";
 		String code=ReadConfig.springUtil("code")+"-"+typeCode+"-"+count+"-"+dateStr;
-		project.setpCode(code);
-		project.setpType(Integer.valueOf(map.get("typeId")+""));
-		return project;
+		return code;
 	}
 	@Override
 	public void addProject(ProjectBase project) {
@@ -97,25 +109,8 @@ public class ProjectServiceImpl implements ProjectService{
 	public ProjectBase showHK(Map map) {
 		// TODO Auto-generated method stub
 		ProjectBase projectBase=projectDao.selectByPrimaryKey(map);
-		Map<String,Object> typeMap=new HashMap<String,Object>();
 		ProjectBase project=new ProjectBase();
-		Date date=new Date();
-		String dateStr=sdf.format(date);
-		String count=projectDao.selectCountByType(map)+1+"";
-		switch (count.length()) {
-		case 1:
-			count="00"+count;
-			break;
-		case 2:
-			count="0"+count;
-			break;
-		default:
-			break;
-		}
-		typeMap.put("id", map.get("typeId"));
-		List<Map> listtype=typeDao.selectList(typeMap);
-		String typeCode=listtype.get(0).get("code")+"";
-		String code=ReadConfig.springUtil("code")+"-"+typeCode+"-"+count+"-"+dateStr;
+		String code=getProjectCode(map);
 		project.setpCode(code);
 		project.setpType(Integer.valueOf(map.get("typeId")+""));
 		project.setpManager(projectBase.getpManager());
@@ -156,5 +151,36 @@ public class ProjectServiceImpl implements ProjectService{
 		projectDao.updateByPrimaryKeySelective(project);
 		contractDao.updateByPrimaryKeySelective(contract);
 		returnMoneyDao.updateByPrimaryKeySelective(returnMoney);
+	}
+	@Override
+	public List<Map> queryProjectProgressManagerList(Map map) {
+		// TODO Auto-generated method stub
+		return projectDao.selectProjectProgressManager(map);
+	}
+
+	@Override
+	public void addProject(Map map) {
+		// TODO Auto-generated method stub
+		Map<String,Object> mapp=new HashMap<String,Object>();
+		ProjectBase project=(ProjectBase) map.get("projectBase");
+		ProjectProgress progress=(ProjectProgress) map.get("progress");
+		mapp.put("typeId", project.getpType());
+		project.setpCode(getProjectCode(map));
+		progress.setpCode(project.getpCode());
+		projectDao.insertSelective(project);
+		progressDao.insertSelective(progress);
+	}
+	@Override
+	public void upProject(Map map) {
+		// TODO Auto-generated method stub
+		ProjectBase project=(ProjectBase) map.get("projectBase");
+		ProjectProgress progress=(ProjectProgress) map.get("progress");
+		projectDao.insertSelective(project);
+		progressDao.insertSelective(progress);
+	}
+	@Override
+	public List<Map> queryClientList(Map map) {
+		// TODO Auto-generated method stub
+		return clientDao.selectClientListByCode(map);
 	}
 }

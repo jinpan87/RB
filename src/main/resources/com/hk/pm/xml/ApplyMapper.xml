@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hk.pm.dao.ApplyMapper">
+  <resultMap id="BaseResultMap" type="com.hk.pm.entity.Apply">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="a_money" jdbcType="REAL" property="aMoney" />
+    <result column="a_name" jdbcType="VARCHAR" property="aName" />
+    <result column="a_type" jdbcType="INTEGER" property="aType" />
+    <result column="a_invoice_number" jdbcType="VARCHAR" property="aInvoiceNumber" />
+    <result column="a_invoice_use" jdbcType="VARCHAR" property="aInvoiceUse" />
+    <result column="a_invoice_name" jdbcType="VARCHAR" property="aInvoiceName" />
+    <result column="a_proposer" jdbcType="INTEGER" property="aProposer" />
+    <result column="a_approver" jdbcType="INTEGER" property="aApprover" />
+    <result column="a_project_code" jdbcType="VARCHAR" property="aProjectCode" />
+    <result column="a_state" jdbcType="INTEGER" property="aState" />
+    <result column="a_reason" jdbcType="VARCHAR" property="aReason" />
+    <result column="a_source" jdbcType="VARCHAR" property="aSource" />
+    <result column="update_time" jdbcType="VARCHAR" property="updateTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, a_money, a_name, a_type, a_invoice_number, a_invoice_use, a_invoice_name, a_proposer, 
+    a_approver, a_project_code, a_state, a_reason, a_source, update_time, create_time
+  </sql>
+  
+  <sql id="Column_Map">
+  a.a_invoice_name as 'invoiceName',
+  a.a_invoice_number as 'invoiceNumber',a.a_invoice_use as 'invoiceUse',
+  a.a_money as 'money',a.a_name as 'name',p.p_name as 'projectName',
+  us.RealName as 'proposer',a.a_reason as 'reason',(CASE a.a_state WHEN '0' then '未审批'
+  WHEN '1' then '审批通过' when '2' then '拒绝' END) as 'state',
+  (CASE a.a_type WHEN '1'then '差旅' WHEN '2' then '招待' END) as 'type',
+  DATE_FORMAT(a.create_time,'%Y-%m-%d %H:%i:%s') as 'createTime', a.id as 'id',
+  u.RealName as 'approver',DATE_FORMAT(a.update_time,'%Y-%m-%d %H:%i:%s') as 'updateTime',
+  a.a_approver as 'approverInt',a.a_project_code as 'projectCodeInt', a.a_proposer as 'proposerInt',
+  a.a_type as 'typeInt',a.a_state as 'stateInt','' as 'totalMoney'
+  </sql>
+  <sql id="Column_Map_totalMoney">
+  '' as 'invoiceName',
+  '' as 'invoiceNumber','' as 'invoiceUse',
+  '' as 'money','' as 'name','' as 'projectName',
+  '' as 'proposer','' as 'reason','' as 'state',
+  '' as 'type',
+  '' as 'createTime', '' as 'id',
+  '' as 'approver','' as 'updateTime',
+  a.a_approver as 'approverInt',a.a_project_code as 'projectCodeInt', a.a_proposer as 'proposerInt',
+  a.a_type as 'typeInt',a.a_state as 'stateInt',SUM(a.a_money) as 'totalMoney'
+  </sql>
+  
+  <sql id="where_sql">
+  where 1=1
+  <if test="aMoney !=null">
+  and a.a_money=#{aMoney}
+  </if>
+  <if test="aName !=null">
+  and a.a_name=#{aName}
+  </if>
+  <if test="aType !=null">
+  and a.a_type=#{aType}
+  </if>
+  <if test="aInvoiceNumber !=null">
+  and a.a_invoice_number=#{aInvoiceNumber}
+  </if>
+  <if test="aInvoiceUse !=null">
+  and a.a_invoice_use=#{aInvoiceUse}
+  </if>
+  <if test="aInvoiceName !=null">
+  and a.a_invoice_name=#{aInvoiceName}
+  </if>
+  <if test="aProposer !=null">
+  and a.a_proposer=#{aProposer}
+  </if>
+  <if test="aApprover !=null">
+  and a.a_approver=#{aApprover}
+  </if>
+  <if test="aProjectCode !=null">
+  and a.a_project_code=#{aProjectCode}
+  </if>
+  <if test="aState !=null">
+  and a.a_state=#{aState}
+  </if>
+  </sql>
+  
+  
+  <sql id="where_sql_top">
+  where 1=1
+  <if test="userId !=null">
+  and a.a_proposer=#{userId}
+  </if>
+  <if test="roleId !=null">
+  and us.permission=#{roleId }
+  </if>
+  </sql>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from s_apply
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <!-- 查询报销列表 -->
+  <select id="selectApplyList" resultType="java.util.Map" parameterType="com.hk.pm.entity.Apply">
+  select
+  <include refid="Column_Map" />
+  from s_apply a 
+  LEFT JOIN t_users u on a.a_approver=u.ID 
+  LEFT JOIN t_users us ON a.a_proposer=us.ID
+  LEFT JOIN s_project_base p on a.a_project_code=p.p_code
+  <include refid="where_sql" />
+  ORDER BY a.create_time desc
+  </select>
+  
+  <!-- 查询报销列表每个人的总金额 -->
+  <select id="selectApplyListTotalMoney" resultType="java.util.Map" parameterType="com.hk.pm.entity.Apply">
+  select
+  <include refid="Column_Map_totalMoney" />
+  from s_apply a 
+  LEFT JOIN t_users u on a.a_approver=u.ID 
+  LEFT JOIN t_users us ON a.a_proposer=us.ID
+  LEFT JOIN s_project_base p on a.a_project_code=p.p_code
+  <include refid="where_sql" />
+  GROUP BY a.a_proposer
+  ORDER BY a.create_time desc
+  </select>
+  
+  <!-- 查询每个人的最新一条报销 -->
+  <select id="selectApplyListTop" resultType="java.util.Map" parameterType="java.util.Map">
+  select
+  <include refid="Column_Map" />
+  from s_apply a 
+  LEFT JOIN t_users u on a.a_approver=u.ID 
+  LEFT JOIN t_users us ON a.a_proposer=us.ID
+  LEFT JOIN s_project_base p on a.a_project_code=p.p_code
+  INNER JOIN (select a_proposer, MAX(create_time) as 'create_time' FROM s_apply GROUP BY a_proposer)b 
+  on a.a_proposer=b.a_proposer and a.create_time=b.create_time
+  <include refid="where_sql_top" />
+  ORDER BY a.create_time desc
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from s_apply
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hk.pm.entity.Apply">
+    insert into s_apply (id, a_money, a_name, 
+      a_type, a_invoice_number, a_invoice_use, 
+      a_invoice_name, a_proposer, a_approver, 
+      a_project_code, a_state, a_reason, 
+      a_source, update_time, create_time
+      )
+    values (#{id,jdbcType=VARCHAR}, #{aMoney,jdbcType=REAL}, #{aName,jdbcType=VARCHAR}, 
+      #{aType,jdbcType=INTEGER}, #{aInvoiceNumber,jdbcType=VARCHAR}, #{aInvoiceUse,jdbcType=VARCHAR}, 
+      #{aInvoiceName,jdbcType=VARCHAR}, #{aProposer,jdbcType=INTEGER}, #{aApprover,jdbcType=INTEGER}, 
+      #{aProjectCode,jdbcType=VARCHAR}, #{aState,jdbcType=INTEGER}, #{aReason,jdbcType=VARCHAR}, 
+      #{aSource,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  
+  <!-- 插入更新 -->
+  <insert id="insertSelective" parameterType="com.hk.pm.entity.Apply">
+    insert into s_apply
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="aMoney != null">
+        a_money,
+      </if>
+      <if test="aName != null">
+        a_name,
+      </if>
+      <if test="aType != null">
+        a_type,
+      </if>
+      <if test="aInvoiceNumber != null">
+        a_invoice_number,
+      </if>
+      <if test="aInvoiceUse != null">
+        a_invoice_use,
+      </if>
+      <if test="aInvoiceName != null">
+        a_invoice_name,
+      </if>
+      <if test="aProposer != null">
+        a_proposer,
+      </if>
+      <if test="aApprover != null">
+        a_approver,
+      </if>
+      <if test="aProjectCode != null">
+        a_project_code,
+      </if>
+      <if test="aState != null">
+        a_state,
+      </if>
+      <if test="aReason != null">
+        a_reason,
+      </if>
+      <if test="aSource != null">
+        a_source,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="aMoney != null">
+        #{aMoney,jdbcType=REAL},
+      </if>
+      <if test="aName != null">
+        #{aName,jdbcType=VARCHAR},
+      </if>
+      <if test="aType != null">
+        #{aType,jdbcType=INTEGER},
+      </if>
+      <if test="aInvoiceNumber != null">
+        #{aInvoiceNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="aInvoiceUse != null">
+        #{aInvoiceUse,jdbcType=VARCHAR},
+      </if>
+      <if test="aInvoiceName != null">
+        #{aInvoiceName,jdbcType=VARCHAR},
+      </if>
+      <if test="aProposer != null">
+        #{aProposer,jdbcType=INTEGER},
+      </if>
+      <if test="aApprover != null">
+        #{aApprover,jdbcType=INTEGER},
+      </if>
+      <if test="aProjectCode != null">
+        #{aProjectCode,jdbcType=VARCHAR},
+      </if>
+      <if test="aState != null">
+        #{aState,jdbcType=INTEGER},
+      </if>
+      <if test="aReason != null">
+        #{aReason,jdbcType=VARCHAR},
+      </if>
+      <if test="aSource != null">
+        #{aSource,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+    <trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides="," >
+     <if test="aMoney != null">
+        a_money = #{aMoney,jdbcType=REAL},
+      </if>
+      <if test="aName != null">
+        a_name = #{aName,jdbcType=VARCHAR},
+      </if>
+      <if test="aType != null">
+        a_type = #{aType,jdbcType=INTEGER},
+      </if>
+      <if test="aInvoiceNumber != null">
+        a_invoice_number = #{aInvoiceNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="aInvoiceUse != null">
+        a_invoice_use = #{aInvoiceUse,jdbcType=VARCHAR},
+      </if>
+      <if test="aInvoiceName != null">
+        a_invoice_name = #{aInvoiceName,jdbcType=VARCHAR},
+      </if>
+      <if test="aProposer != null">
+        a_proposer = #{aProposer,jdbcType=INTEGER},
+      </if>
+      
+        a_approver = #{aApprover,jdbcType=INTEGER},
+     
+      <if test="aProjectCode != null">
+        a_project_code = #{aProjectCode,jdbcType=VARCHAR},
+      </if>
+      <if test="aState != null">
+        a_state = #{aState,jdbcType=INTEGER},
+      </if>
+      <if test="aReason != null">
+        a_reason = #{aReason,jdbcType=VARCHAR},
+      </if>
+      <if test="aSource != null">
+        a_source = #{aSource,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hk.pm.entity.Apply">
+    update s_apply
+    <set>
+      <if test="aMoney != null">
+        a_money = #{aMoney,jdbcType=REAL},
+      </if>
+      <if test="aName != null">
+        a_name = #{aName,jdbcType=VARCHAR},
+      </if>
+      <if test="aType != null">
+        a_type = #{aType,jdbcType=INTEGER},
+      </if>
+      <if test="aInvoiceNumber != null">
+        a_invoice_number = #{aInvoiceNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="aInvoiceUse != null">
+        a_invoice_use = #{aInvoiceUse,jdbcType=VARCHAR},
+      </if>
+      <if test="aInvoiceName != null">
+        a_invoice_name = #{aInvoiceName,jdbcType=VARCHAR},
+      </if>
+      <if test="aProposer != null">
+        a_proposer = #{aProposer,jdbcType=INTEGER},
+      </if>
+      <if test="aApprover != null">
+        a_approver = #{aApprover,jdbcType=INTEGER},
+      </if>
+      <if test="aProjectCode != null">
+        a_project_code = #{aProjectCode,jdbcType=VARCHAR},
+      </if>
+      <if test="aState != null">
+        a_state = #{aState,jdbcType=INTEGER},
+      </if>
+      <if test="aReason != null">
+        a_reason = #{aReason,jdbcType=VARCHAR},
+      </if>
+      <if test="aSource != null">
+        a_source = #{aSource,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hk.pm.entity.Apply">
+    update s_apply
+    set a_money = #{aMoney,jdbcType=REAL},
+      a_name = #{aName,jdbcType=VARCHAR},
+      a_type = #{aType,jdbcType=INTEGER},
+      a_invoice_number = #{aInvoiceNumber,jdbcType=VARCHAR},
+      a_invoice_use = #{aInvoiceUse,jdbcType=VARCHAR},
+      a_invoice_name = #{aInvoiceName,jdbcType=VARCHAR},
+      a_proposer = #{aProposer,jdbcType=INTEGER},
+      a_approver = #{aApprover,jdbcType=INTEGER},
+      a_project_code = #{aProjectCode,jdbcType=VARCHAR},
+      a_state = #{aState,jdbcType=INTEGER},
+      a_reason = #{aReason,jdbcType=VARCHAR},
+      a_source = #{aSource,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

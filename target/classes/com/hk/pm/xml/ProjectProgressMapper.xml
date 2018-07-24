@@ -27,6 +27,8 @@
     values (#{id,jdbcType=BIGINT}, #{pCode,jdbcType=VARCHAR}, #{pProgress,jdbcType=VARCHAR}, 
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
+  
+  <!-- 插入更新 -->
   <insert id="insertSelective" parameterType="com.hk.pm.entity.ProjectProgress" >
     insert into s_project_progress
     <trim prefix="(" suffix=")" suffixOverrides="," >
@@ -61,6 +63,20 @@
       </if>
       <if test="updateTime != null" >
         #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+    <trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides="," >
+      <if test="pCode != null" >
+        p_code = #{pCode,jdbcType=VARCHAR},
+      </if>
+      <if test="pProgress != null" >
+        p_progress = #{pProgress,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>

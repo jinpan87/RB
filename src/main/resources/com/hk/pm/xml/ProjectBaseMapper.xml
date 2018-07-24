@@ -64,6 +64,9 @@
   <if test="pType != null and typeId !=''" >
        and p_type = #{pType}
   </if>
+  <if test="pCode != null and pCode !=''" >
+       and p_code = #{pCode}
+  </if>
   </sql>
   
   <!-- 查询条件 -->
@@ -124,6 +127,26 @@
     <include refid="where_sql"/>
   </select>
   
+  <!-- 项目进程管理信息列表查询 -->
+  <select id="selectProjectProgressManager" resultType="java.util.Map" 
+  parameterType="java.util.Map">
+    select id,`code`,typeId,typeCode,`name`,typeName,grew,manager,summary,
+    afterManager,state,province,city,product,`check`,
+    DATE_FORMAT(startTime,'%Y-%m-%d %H:%i:%s') as 'startTime',
+    overCause,DATE_FORMAT(updateTime,'%Y-%m-%d %H:%i:%s') as 'updateTime',
+	county,scode,sname,originalContractor,
+	DATE_FORMAT(writtenDay,'%Y-%m-%d %H:%i:%s') as 'writtenDay',
+	planAmount,planMake,money,decisionName,
+    decisionPhone,buttName,buttPhone,sourceFund,
+    ready ,information,	summarize,progresses,
+    DATE_FORMAT(createTime,'%Y-%m-%d %H:%i:%s') as 'createTime',customerCode,rivalCode
+    from v_project_progress_manager
+    where 1=1
+  <if test="typeId !=null and typeId !=''">
+  and typeId=#{typeId}
+  </if>
+  </select>
+  
   <!--通过主键删除一个  -->
   <delete id="deleteByPrimaryKey" parameterType="java.util.Map" >
     delete from s_project_base
@@ -154,6 +177,8 @@
       #{startTime,jdbcType=TIMESTAMP}, #{pState,jdbcType=INTEGER}, #{pOverCause,jdbcType=VARCHAR}, 
       #{updateTime,jdbcType=TIMESTAMP})
   </insert>
+  
+  <!-- 插入更新 -->
   <insert id="insertSelective" parameterType="com.hk.pm.entity.ProjectBase" >
     insert into s_project_base
     <trim prefix="(" suffix=")" suffixOverrides="," >
@@ -346,6 +371,98 @@
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
+    <trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides="," >
+   	 <if test="pCode !=null">
+      	p_code = #{pCode,jdbcType=VARCHAR},
+      </if>
+     <if test="pType != null" >
+        p_type = #{pType,jdbcType=INTEGER},
+      </if>
+      <if test="pName != null" >
+        p_name = #{pName,jdbcType=VARCHAR},
+      </if>
+      <if test="pGrew != null" >
+        p_grew = #{pGrew,jdbcType=VARCHAR},
+      </if>
+      <if test="pManager != null" >
+        p_manager = #{pManager,jdbcType=VARCHAR},
+      </if>
+      <if test="pSummary != null" >
+        p_summary = #{pSummary,jdbcType=VARCHAR},
+      </if>
+      <if test="pAfterManager != null" >
+        p_after_manager = #{pAfterManager,jdbcType=VARCHAR},
+      </if>
+      <if test="pProvince != null" >
+        p_province = #{pProvince,jdbcType=VARCHAR},
+      </if>
+      <if test="pCity != null" >
+        p_city = #{pCity,jdbcType=VARCHAR},
+      </if>
+      <if test="pCounty != null" >
+        p_county = #{pCounty,jdbcType=VARCHAR},
+      </if>
+      <if test="pScode != null" >
+        p_scode = #{pScode,jdbcType=VARCHAR},
+      </if>
+      <if test="pSname != null" >
+        p_sname = #{pSname,jdbcType=VARCHAR},
+      </if>
+      <if test="pSourceFund != null" >
+        p_source_fund = #{pSourceFund,jdbcType=VARCHAR},
+      </if>
+      <if test="pReady != null" >
+        p_ready = #{pReady,jdbcType=INTEGER},
+      </if>
+      <if test="pOriginalContractor != null" >
+        p_original_contractor = #{pOriginalContractor,jdbcType=VARCHAR},
+      </if>
+      <if test="pSummarize != null" >
+        p_summarize = #{pSummarize,jdbcType=VARCHAR},
+      </if>
+      <if test="pMoney != null" >
+        p_money = #{pMoney,jdbcType=REAL},
+      </if>
+      <if test="pProduct != null" >
+        p_product = #{pProduct,jdbcType=VARCHAR},
+      </if>
+      <if test="pCheck != null" >
+        p_check = #{pCheck,jdbcType=VARCHAR},
+      </if>
+      <if test="pProgress != null" >
+        p_progress = #{pProgress,jdbcType=VARCHAR},
+      </if>
+      <if test="pPlanAmount != null" >
+        p_plan_amount = #{pPlanAmount,jdbcType=REAL},
+      </if>
+      <if test="pPlanMake != null" >
+        p_plan_make = #{pPlanMake,jdbcType=VARCHAR},
+      </if>
+      <if test="pWrittenDay != null" >
+        p_written_day = #{pWrittenDay,jdbcType=TIMESTAMP},
+      </if>
+      <if test="pCustomerCode != null" >
+        p_customer_code = #{pCustomerCode,jdbcType=VARCHAR},
+      </if>
+      <if test="pRivalCode != null" >
+        p_rival_code = #{pRivalCode,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="pState != null" >
+        p_state = #{pState,jdbcType=INTEGER},
+      </if>
+      <if test="pOverCause != null" >
+        p_over_cause = #{pOverCause,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.hk.pm.entity.ProjectBase" >
     update s_project_base

@@ -15,10 +15,10 @@
 						<label><input type="radio" value="1" name="radio">已审核</label>
 						<label><input type="radio" value="" name="radio">全部</label>
 					</div>
-					<label for="roleName" class="col-sm-2 control-label">姓名：</label>
+					<!-- <label for="roleName" class="col-sm-2 control-label">姓名：</label>
 					<div class="col-sm-2">
 						<input type="text" value="" id="userName">
-					</div>
+					</div> -->
 					<div class="col-sm-3">
 					
 					<!-- <button class="btn btn-primary " data-toggle="modal" data-target="#myModal" onclick="addproject()">立项</button> -->
@@ -41,34 +41,12 @@
 			<iframe id="iframe" src="" scrolling="auto" frameborder="yes" border="1" height="240"></iframe>
 			
 <script type="text/javascript">
-
-pageSetUp();
-<%-- chenckType();
- var selectTyep=function(str){
-	$.ajax({type : "GET",
-            url : "<%=basePath%>/type.do?typeId="+str,
-            success : function(data) {
-            	$('#width_jqgrid').html(data);
-            	var obj=document.getElementById("projecttyep");
-           	 for(i=0;i<obj.options.length;i++){
-           	        if(obj.options[i].value==str)
-           	        	obj.options[i].selected = 'selected';  
-           	    }
-            }});  
-	 
-	} 
- function chenckType(){
-	 var obj=document.getElementById("projecttyep");
-	 var typeId=${json.typeId };
-   	 for(i=0;i<obj.options.length;i++){
-   	        if(obj.options[i].value==typeId)
-   	        	obj.options[i].selected = 'selected';  
-   	    }
- }--%>
+ pageSetUp();
  var queryRecord=function(id){
-	var name=document.getElementById("userName").value;
+	 /*name是条件查询名称  */
+	/* var name=document.getElementById("userName").value */
 	/* alert("name"+name); */
-	document.get
+	
 	var radios=document.getElementsByName("radio");
 	var state="";
 	for(var i=0;i<radios.length;i++){
@@ -80,26 +58,27 @@ pageSetUp();
 		   break;
 		   }
 	}
-	
-	$.post("daily/dailyCheck2.do",{name:name,state:state,userName:"${userName}"},function(data){
+	$.post("daily/checkdailyListByUserId.do",{state:state,roleId:"${roleId}",userId:"${userId}",uid:"${uid}"},function(data){
 		$('#width_jqgrid').html(data);
 		  
 	});
  }
  
- var editRow=function(id){
-	
-	 $.post("daily/dailyUpdate.do",{id:id,rState:"${userName}"},function(data){
-		 
-		alert("更新成功");
-		 window.location.hash="daily/dailyCheck.do?roleId="+data.roleId+"&userName="+data.userName;
-	 },"json"
-	 );
+ var editRow=function(id,uid){
+	 console.log("进入审批方法");
+	 console.log("userName:'${userName}'");
+	 $.post("daily/checkDaily.do",{id:id,rState:"${userName}"},function(data){
+		alert("审批完成");
+		/* window.location.hash="daily/dailyCheck.do?roleId=${roleId}&userId=${userId}"; */
+		window.location.hash="daily/checkdailyListByUserId.do?uid="+uid+"&userId=${userId}&roleId=${roleId}&userName=${userName}";
+		 },"json"
+		 );
  }
  
- /* var showRow=function(id){
-	 window.location.hash="showProject.do?id="+id;
+  var showRow=function(uid){
+	 window.location.hash="daily/showdailyListByUserId.do?uid="+uid;
  }
+  /*
  var deleteRow=function(id){
 	 window.location.hash="deleteProject.do?id="+id;
  }  */
@@ -131,7 +110,6 @@ var pagefunction = function() {
 		                  timeout : 4000
 		                });
 		                var s = Math.random();
-		               <%--  window.location.hash="<%=basePath%>/mediaWords/queryMediaList.jhtml?s="+s; --%>
 		              } else {
 		                $.smallBox({
 		                  title : "出错信息",
@@ -164,9 +142,12 @@ var pagefunction = function() {
 			data : jqgrid_data,
 			datatype : "local",
 			height : 'auto',
-			colNames : ['编号','姓名','开始时间','结束时间','工时','工作内容','项目类别','项目名称','项目编号','项目阶段','完成情况','填写时间','审批人','审批'],		
+			colNames : ['操作','编号','用户ID','姓名','开始时间','结束时间','工时','工作内容','项目类别','项目名称','项目编号','项目阶段','完成情况','填写时间','审批人',
+			            '城市名称','区县名称','拜访单位','拜访人','拜访方式','拜访时间'],		
 			colModel : [
-						{ name : 'id', index:'id',width:80,hidden:false }, 
+						{ name : 'act', index:'act',width:80,hidden:false }, 
+						{ name : 'id', index:'id',width:80,hidden:true }, 
+						{ name : 'uid', index:'uid',width:80,hidden:true }, 
 						{ name : 'realName', index : 'realName', hidden : false },
 						{ name : 'kssj', index : 'kssj' },
 						{ name : 'jssj', index : 'jssj' },
@@ -179,7 +160,13 @@ var pagefunction = function() {
 						{ name : 'wcqk', index : 'wcqk' },
 						{ name : 'createDate', index : 'createDate' },
 						{ name : 'state', index : 'state' },
-						{ name : 'act', index:'act',width:80,hidden:false }, 
+						{ name : 'csmc', index : 'csmc' },
+						{ name : 'qxmc', index : 'qxmc' },
+						{ name : 'khdw', index : 'khdw' },
+						{ name : 'bfry', index : 'bfry' },
+						{ name : 'bffs', index : 'bffs' },
+						{ name : 'bfsj', index : 'bfsj' },
+						
 					  ], 	
 			rowNum : 10,
 			rowList : [10, 20, 30],
@@ -192,6 +179,8 @@ var pagefunction = function() {
 			sortname : 'createDate',
 			toolbarfilter: true,
 			viewrecords : true,
+			shrinkToFit:false,
+			autoScroll: false,
 			sortorder : "desc",
 			gridComplete: function(){
 				var ids = jQuery("#jqgrid").jqGrid('getDataIDs');
@@ -200,12 +189,20 @@ var pagefunction = function() {
 					var cl = ids[i];
 					var item = $("#jqgrid").jqGrid('getRowData', cl);
 				    var id = item.id;
-					be = "<button class='btn btn-xs btn-default' title='审批' onclick=\"editRow('"+id+"');\"><i class='fa fa-pencil'></i></button>"; 
+				    var uid = item.uid;
+				    var state = item.state;
+				    
+					be = "<button class='btn btn-xs btn-default' title='审核' onclick=\"editRow('"+id+"','"+uid+"');\"><i class='fa fa-pencil'></i></button>"; 
 					se = "<button class='btn btn-xs btn-default' title='删除' onclick=\"deleteRow('"+id+"');\"><i class='fa fa-times'></i></button>";
-					ss = "<button class='btn btn-xs btn-default' title='查看详情' onclick=\"showRow('"+id+"');\"><i class='fa fa-search'></i></button>";
+					ss = "<button class='btn btn-xs btn-default' title='查看详情' onclick=\"showRow('"+uid+"');\"><i class='fa fa-search'></i></button>";
 					ce = "<button class='btn btn-xs btn-default' title='添加' onclick=\"addproject('"+id+"');\"><i class='fa fa-lock'></i></button>";
-					//jQuery("#jqgrid").jqGrid('setRowData',ids[i],{act:be+se+ce});
-					jQuery("#jqgrid").jqGrid('setRowData',ids[i],{act:be});
+					var userId='${userId}';
+					if(state=='未审批'){
+						jQuery("#jqgrid").jqGrid('setRowData',ids[i],{act:be});
+					}else{
+						jQuery("#jqgrid").jqGrid('setRowData',ids[i]);
+					}
+					
 				}	
 			},
 			caption : "日报列表",				

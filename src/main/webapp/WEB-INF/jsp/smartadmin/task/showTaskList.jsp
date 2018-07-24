@@ -47,7 +47,6 @@
 		  var roleId='${roleId}';
 	   $.post("task/searchTask.do",{"state":state,"userId":userId,"roleId":roleId},function(data){
 		   $('#width_jqgrid').html(data);
-		   
 	   });
 	  });
 	  

@@ -202,6 +202,9 @@
 						<li>
 							<a href="type.do">项目信息</a>
 						</li>
+						<li>
+							<a href="project/projectProgressManager/type.do">项目进度管理</a>
+						</li>
 						 <li>
 							<a href="statisticProject.do">项目统计</a>
 						</li> 
@@ -239,6 +242,23 @@
 						<li>
 							<a href="daily/dailyCheck.do?userId=${users.id }&roleId=${users.permission}">日报审批</a>
 						</li>
+					</ul>
+				</li>
+				<li>
+					<a href="#"><i class="fa fa-lg fa-fw fa-table"></i> <span class="menu-item-parent">报销</span></a>
+					<ul>
+						<li>
+							<a href="apply/queryApplyListTop.do?userId=${users.id }&roleId=${users.permission}">我的报销单据</a>
+						</li>
+						  <li style="display:lock" >
+							<a href="apply/applyCheckTop.do?userId=${users.id }&roleId=${users.permission}">报销审核</a>
+						</li> 
+						<%--  <li style="display:none" >
+							<a href="daily/dailyWeek.do?rUid=${users.id }" id="dailyWeek">一个星期没有日报的项目的最近一次日报</a>
+						</li> 
+						<li>
+							<a href="daily/dailyCheck.do?userId=${users.id }&roleId=${users.permission}">日报审批</a>
+						</li>  --%>
 					</ul>
 				</li>
 				<!-- <li>

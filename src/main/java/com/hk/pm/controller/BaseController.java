@@ -16,6 +16,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,8 +27,10 @@ import org.springframework.web.servlet.ModelAndView;
 import com.hk.pm.entity.BaseObject;
 import com.hk.pm.entity.Contract;
 import com.hk.pm.entity.ProjectBase;
+import com.hk.pm.entity.ProjectProgress;
 import com.hk.pm.entity.Record;
 import com.hk.pm.entity.ReturnMoney;
+import com.hk.pm.entity.utilEntity.UtilProject;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -125,7 +129,13 @@ public class BaseController {
 		         SimpleDateFormat sdf = new SimpleDateFormat(format);  
 		        return sdf.format(new Date(Long.valueOf(seconds)));  
 		     }  
-	
+	//转换模型
+	public static ModelAndView getModel2(List list,ModelAndView modelAndView){
+		JSONArray jsonArray = JSONArray.fromObject(list);  
+		modelAndView.addObject("data", jsonArray);
+		return modelAndView;
+	}
+	//返回模型、转换时间格式
 	public static ModelAndView getModel(List list,ModelAndView modelAndView){
 		List listdate=new ArrayList();
 		List listNoDate=new ArrayList();
@@ -282,6 +292,55 @@ public class BaseController {
 			break;
 		}
 		return r;
+	}
+	
+	public Map<String,Object> utilProjectToProjectBase(UtilProject utilProject){
+		Map<String,Object> map=new HashMap<String,Object>();
+		ProjectBase projectBase=new ProjectBase();
+		 Pattern pattern = Pattern.compile("[0-9]*");
+		 Matcher isNum = pattern.matcher(utilProject.getId());
+         if( !isNum.matches() ){
+        	 projectBase.setId(null);
+         }else {
+        	 projectBase.setId(Long.valueOf(utilProject.getId())); 
+         }
+		projectBase.setCreateTime(utilProject.getCreateTime());
+		projectBase.setpCity(utilProject.getCity());
+		projectBase.setpCode(utilProject.getCode());
+		projectBase.setpCounty(utilProject.getCounty());
+		projectBase.setpCustomerCode(utilProject.getCustomerCode());
+		projectBase.setpManager(utilProject.getManager());
+		projectBase.setpMoney(Float.valueOf(utilProject.getMoney()));
+		projectBase.setpName(utilProject.getName());
+		projectBase.setpOriginalContractor(utilProject.getOriginalContractor());
+		projectBase.setpOverCause(null);
+		projectBase.setpPlanAmount(Float.valueOf(utilProject.getPlanAmount()));
+		projectBase.setpPlanMake(utilProject.getPlanMake());
+		projectBase.setpProduct(null);
+		projectBase.setpProgress(utilProject.getProgresses());
+		projectBase.setpProvince(utilProject.getProvince());
+		projectBase.setpReady(Integer.valueOf(utilProject.getReady()));
+		projectBase.setpRivalCode(utilProject.getRivalCode());
+		projectBase.setpScode(null);
+		projectBase.setpSname(null);
+		projectBase.setpSourceFund(utilProject.getSourceFund());
+		projectBase.setpState(Integer.valueOf(utilProject.getState()));
+		projectBase.setpSummarize(utilProject.getSummarize());
+		projectBase.setpSummary(null);
+		projectBase.setpType(utilProject.getTypeId());
+		projectBase.setpWrittenDay(utilProject.getWrittenDay());
+		projectBase.setStartTime(null);
+		projectBase.setUpdateTime(null);
+		projectBase.setpGrew(utilProject.getGrew());
+		
+		ProjectProgress progress=new ProjectProgress();
+		progress.setpCode(utilProject.getCode());
+		progress.setpProgress(utilProject.getProgresses());
+		progress.setUpdateTime(new Date());
+		
+		map.put("progress", progress);
+		map.put("projectBase", projectBase);
+		return map;
 	}
 	public static void main(String[] args) {
 		String l=System.currentTimeMillis()+"";

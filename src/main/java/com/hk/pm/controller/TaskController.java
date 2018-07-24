@@ -92,19 +92,6 @@ public class TaskController {
 		String userId=request.getParameter("userId");
 		String state=request.getParameter("state");
 		task.setState(Integer.valueOf(state));
-		/*switch (roleId) {
-		case "2":
-			task.setInitiator(Integer.valueOf(userId));
-			list=taskService.queryTaskList(task);
-			break;
-		default:
-			task.setDoPerson(Integer.valueOf(userId));
-			list=taskService.queryTaskList(task);
-			task.setDoPerson(null);
-			task.setRelevancePerson(userId);
-			list.addAll(taskService.queryTaskList(task));
-			break;
-		}*/
 		list=taskService.queryTaskList(task);
 		JSONArray jsonArray=JSONArray.fromObject(list);
 		modelAndView.addObject("data", jsonArray);

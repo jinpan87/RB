@@ -40,6 +40,8 @@ public interface ProjectBaseMapper {
     
     int selectCountByType(Map map);//分类查询项目的个数
     
+    List<Map> selectProjectProgressManager(Map map);//项目进度管理列表查询
+    
     /**
      *更新一个
      * @mbggenerated 2018-05-24

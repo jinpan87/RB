@@ -9,7 +9,7 @@ import com.hk.pm.entity.ReturnMoney;
 
 public interface ProjectService {
 	List<Map> queryProjectList(Map map);
-	List<Map> queryTypeList();
+	List<Map> queryTypeList(Map map);//查询项目类型列表
 	List<Map> queryListHK(Map map);//非回款、售后的项目列表，新增回款售后项目
 	ProjectBase show(Map map);
 	ProjectBase showHK(Map map);//需要新增回款项目的对象
@@ -20,4 +20,11 @@ public interface ProjectService {
 	void deletePorject(Map map);//展示单个项目的详细信息
 	Map showUpdateProjectHK(Map map);//展示更新内容
 	void updateProjectHK(ProjectBase project,Contract contract,ReturnMoney returnMoney);//更新新的项目
+	
+	List<Map> queryProjectProgressManagerList(Map map);//项目进度管理列表查询
+	void addProject(Map map);//添加项目进度管理
+	void upProject(Map map);//更新项目进度管理
+	
+	List<Map> queryClientList(Map map);//查询接口人和决策人信息;
+	
 }

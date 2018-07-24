@@ -36,6 +36,7 @@ public interface RecordMapper {
      */
     List<Map> selectRecordList(Map map);
     
+    List<Map> selectRecordListByUserId(Map map);//查询userId相同的所有日报
     
     List<Map> selectStatisticByPerson(Record record);//查询项目中每个人的工时和报销金额
     

@@ -15,11 +15,8 @@ public interface ProjectProgressMapper {
      */
     int insert(ProjectProgress record);
 
-    /**
-     *
-     * @mbggenerated 2018-05-24
-     */
-    int insertSelective(ProjectProgress record);
+   
+    int insertSelective(ProjectProgress record);//插入更新
 
     /**
      *

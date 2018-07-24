@@ -34,14 +34,19 @@
   </sql>
   
   <!-- 列表展示字段 -->
-  <sql id="show_list">
-  r.id as 'id',u.RealName as 'realName',DATE_FORMAT(r.r_kssj,'%Y-%m-%d %H:%i:%s') as 'kssj',DATE_FORMAT(r.r_jssj,'%Y-%m-%d %H:%i:%s') as 'jssj',r.r_gs as 'gs',r.r_xxgz as 'xxgz' ,r.r_xmlb as 'xmlb',r.r_xmmc as 'xmmc',
-  r.r_xmbh as 'xmbh',r.r_xmjd as 'xmjd', r.r_wcqk as 'wcqk',DATE_FORMAT(r.r_createdate,'%Y-%m-%d %H:%i:%s')  as 'createDate',case r.r_state  WHEN '0' THEN '未审批' ELSE r.r_state end  as 'state' 
-  </sql>
+   <sql id="show_list">
+   r.id as 'id',r.r_uid as 'uid',u.RealName as 'realName',DATE_FORMAT(r.r_kssj,'%Y-%m-%d %H:%i:%s') as 'kssj',
+   DATE_FORMAT(r.r_jssj,'%Y-%m-%d %H:%i:%s') as 'jssj',r.r_gs as 'gs',r.r_xxgz as 'xxgz' ,
+   r.r_xmlb as 'xmlb',r.r_xmmc as 'xmmc',r.r_xmbh as 'xmbh',r.r_xmjd as 'xmjd', r.r_wcqk as 'wcqk',
+   DATE_FORMAT(r.r_createdate,'%Y-%m-%d %H:%i:%s')  as 'createDate',
+   case r.r_state  WHEN '0' THEN '未审批' ELSE r.r_state end  as 'state',IFNULL(r_csmc,'') as 'csmc',
+   IFNULL(r_qxmc,'') as 'qxmc',IFNULL(r_khdw,'') as 'khdw',IFNULL(r_bfry,'') as 'bfry',IFNULL(r_bffs,'') as 'bffs',
+   IFNULL(r_bfsj,'') as 'bfsj'
+   </sql>
   
   <!-- 项目个人统计字段 -->
  <sql id="column_statistic_person">
- CONVERT(SUM(r.r_gs),DECIMAL) as 'gs',CONVERT(SUM(r.r_bxje),DECIMAL) as 'bxje',u.RealName as 'name'
+ CONVERT(SUM(r.r_gs),DECIMAL) as 'gs',CONVERT(SUM(a.a_money),DECIMAL) as 'bxje',u.RealName as 'name'
  </sql>
   
   <!-- 展示列表查询条件 -->
@@ -81,14 +86,28 @@
   SELECT 
   <include refid="show_list"/>
   from t_record r LEFT JOIN t_users u on r.r_uid=u.ID
+  INNER JOIN (SELECT re.r_uid,MAX(re.r_createdate) AS 'createDate' from t_record re GROUP BY  re.r_uid)b 
+  on b.r_uid=r.r_uid and b.createDate=r.r_createdate  
   <include refid="where_show_list"/>
+  and u.RealName is not NULL
+  ORDER BY r.r_createdate DESC
+  </select>
+  
+  <!-- 日报查询 -->
+  <select id="selectRecordListByUserId" resultType="java.util.Map" parameterType="java.util.Map">
+  SELECT 
+  <include refid="show_list"/>
+  from t_record r LEFT JOIN t_users u on r.r_uid=u.ID
+  <include refid="where_show_list"/>
+  and u.RealName is not NULL
+  ORDER BY r.r_createdate DESC
   </select>
   
   <!-- 项目统计查询每个人的工时和金额 -->
   <select id="selectStatisticByPerson" parameterType="com.hk.pm.entity.Record" resultType="java.util.Map">
   select
   <include refid="column_statistic_person"/>
-  from t_record r LEFT JOIN t_users u on r.r_uid=u.id
+  from t_record r LEFT JOIN s_apply a ON r.r_uid = a.a_proposer and r.r_xmbh=a.a_project_code LEFT JOIN t_users u on r.r_uid=u.id
   <include refid="where_statistic"/>
   GROUP  BY r.r_uid;
   </select>
@@ -96,8 +115,8 @@
   <!-- 项目统计总工时和金额 -->
   <select id="selectStatistic" parameterType="com.hk.pm.entity.Record" resultType="java.util.Map">
   select
-    CONVERT(SUM(r.r_gs),DECIMAL) as 'gs',CONVERT(SUM(r.r_bxje),DECIMAL) as 'bxje'
-  from t_record r 
+  CONVERT(SUM(r.r_gs),DECIMAL) as 'gs',CONVERT(SUM(a.a_money),DECIMAL) as 'bxje'
+  from t_record r LEFT JOIN s_apply a ON r.r_uid = a.a_proposer and r.r_xmbh=a.a_project_code
   where 1=1 
   <if test="rXmbh !=null and rXmbh !=''">
   and r.r_xmbh=#{rXmbh}

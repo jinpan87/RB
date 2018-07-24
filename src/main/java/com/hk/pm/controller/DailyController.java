@@ -118,18 +118,16 @@ public class DailyController extends BaseController {
 		return R.ok();
 	}
 	/**
-	 * 查看和修改日报信息
+	 * 查看最新的一条日报
 	 * @param response
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/dailyMsg.do")
+	@RequestMapping(value = "/dailyMsg.do")//日报信息查询
 	public ModelAndView dailyMsg(HttpServletResponse response, HttpServletRequest request) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		String userid = request.getParameter("userId");
 		String roleId = request.getParameter("roleId");
-		// String[] strArray=userid.split("?");
-		// userid=strArray[0];
 		map.put("rUid", userid);
 		map.put("roleId", roleId);
 		List<Map> list = new ArrayList<Map>();
@@ -139,6 +137,81 @@ public class DailyController extends BaseController {
 		modelAndView.addObject("data", jsonArray);
 		modelAndView.addObject("userId", userid);
 		modelAndView.addObject("roleId", roleId);
+		return modelAndView;
+	}
+	/**
+	 * 查询userId不同的最新一条日报的状态
+	 * @param response
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/queryDailyByState.do")//日报信息查询
+	public ModelAndView queryDailyByState(HttpServletResponse response, HttpServletRequest request) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		String userid = request.getParameter("userId");
+		String roleId = request.getParameter("roleId");
+		String state = request.getParameter("state");
+		map.put("rUid", userid);
+		map.put("roleId", roleId);
+		map.put("state", state);
+		List<Map> list = new ArrayList<Map>();
+		ModelAndView modelAndView = new ModelAndView("jsp/smartadmin/daily/dailyMsg.jsp");
+		list = dailyService.queryRecordList(map);
+		JSONArray jsonArray = JSONArray.fromObject(list);
+		modelAndView.addObject("data", jsonArray);
+		modelAndView.addObject("userId", userid);
+		modelAndView.addObject("roleId", roleId);
+		modelAndView.addObject("state", state);
+		return modelAndView;
+	}
+	/**
+	 * 查询userId相同的所有日报
+	 * @param response
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/showdailyListByUserId.do")//日报信息查询
+	public ModelAndView showdailyListByUserId(HttpServletResponse response, HttpServletRequest request) {
+		ModelAndView modelAndView = new ModelAndView("jsp/smartadmin/daily/dailyMsgByUserId.jsp");
+		Map<String, Object> map = new HashMap<String, Object>();
+		String uid = request.getParameter("uid");
+		String userid = request.getParameter("userId");
+		String roleId = request.getParameter("roleId");
+		map.put("rUid", uid);
+		List<Map> list = new ArrayList<Map>();
+		list = dailyService.queryRecordListByUserId(map);
+		JSONArray jsonArray = JSONArray.fromObject(list);
+		modelAndView.addObject("data", jsonArray);
+		modelAndView.addObject("userId", userid);
+		modelAndView.addObject("uid", uid);
+		modelAndView.addObject("roleId", roleId);
+		return modelAndView;
+	}
+	/**
+	 * 查询userId相同的所有日报
+	 * @param response
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/checkdailyListByUserId.do")//查询同一个人的所有审核列表
+	public ModelAndView checkdailyListByUserId(HttpServletResponse response, HttpServletRequest request) {
+		ModelAndView modelAndView = new ModelAndView("jsp/smartadmin/daily/dailyCheck2.jsp");
+		Map<String, Object> map = new HashMap<String, Object>();
+		String uid = request.getParameter("uid");
+		String userid = request.getParameter("userId");
+		String roleId = request.getParameter("roleId");
+		String userName = request.getParameter("userName");
+		String state = request.getParameter("state");
+		map.put("rUid", uid);
+		map.put("state", state);
+		List<Map> list = new ArrayList<Map>();
+		list = dailyService.queryRecordListByUserId(map);
+		JSONArray jsonArray = JSONArray.fromObject(list);
+		modelAndView.addObject("data", jsonArray);
+		modelAndView.addObject("userId", userid);
+		modelAndView.addObject("uid", uid);
+		modelAndView.addObject("roleId", roleId);
+		modelAndView.addObject("userName", userName);
 		return modelAndView;
 	}
 	@RequestMapping(value = "/updateDaily.do")
@@ -183,34 +256,31 @@ public class DailyController extends BaseController {
 		return modelAndView;
 	}
 
-	@RequestMapping(value = "/dailyCheck2.do") // 根据不同的角色不同的条件展示不同的审批列表
-	public ModelAndView dailyCheck2(HttpServletResponse response, HttpServletRequest request) {
-		ModelAndView modelAndView = new ModelAndView("jsp/smartadmin/daily/dailyCheck.jsp");
+	@RequestMapping(value = "/dailyByUserIdAndState.do") // 查看审批和未审批的数据
+	public ModelAndView dailyByUserIdAndState(HttpServletResponse response, HttpServletRequest request) {
+		ModelAndView modelAndView = new ModelAndView("jsp/smartadmin/daily/dailyMsgByUserId.jsp");
 		Map<String, Object> map = new HashMap<String, Object>();
 		Map<String, Object> mapp = new HashMap<String, Object>();
 		List<Map> list = new ArrayList<Map>();
 		String state = request.getParameter("state");
-		String userName = request.getParameter("userName");
-		String name = request.getParameter("name");
+		String uid = request.getParameter("uid");
 		String roleId = request.getParameter("roleId");
 		String userId = request.getParameter("userId");
-		name = f(name);// 去掉字符串前面的空格
-		map.put("roleId", roleId);
-		map.put("name", name);
+		map.put("rUid", uid);
 		map.put("state", state);
-		list = dailyService.queryCheckList(map);
+		list = dailyService.queryRecordListByUserId(map);
 		JSONArray jsonArray = JSONArray.fromObject(list);
 		mapp.put("data", jsonArray);
 		modelAndView.addObject("data", jsonArray);
-		modelAndView.addObject("userName", userName);
-		modelAndView.addObject("name", name);
 		modelAndView.addObject("roleId", roleId);
 		modelAndView.addObject("userId", userId);
+		modelAndView.addObject("uid", uid);
+		modelAndView.addObject("state", state);
 		return modelAndView;
 	}
 
-	@RequestMapping(value = "/dailyUpdate.do") // 根据不同的角色不同的条件展示不同的审批列表
-	public Map<String, Object> dailyUpdate(HttpServletResponse response, HttpServletRequest request, Record record) {
+	@RequestMapping(value = "/checkDaily.do") // 审核更新
+	public Map<String, Object> checkDaily(HttpServletResponse response, HttpServletRequest request, Record record) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("userName", record.getrState());
 		dailyService.updateRecord(record);

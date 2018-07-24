@@ -229,7 +229,7 @@ pageSetUp();
 						{ name : 'xmlb', index : 'xmlb' },
 						{ name : 'xmjd', index : 'xmjd'},
 						{ name : 'wcqk', index : 'wcqk'},
-						{ name : 'bxje', index : 'bxje'},
+						{ name : 'bxje', index : 'bxje',hidden:true},
 					  ], 	
 			rowNum : 10,
 			rowList : [10, 20, 30],

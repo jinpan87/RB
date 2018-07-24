@@ -15,6 +15,9 @@
 <link rel="stylesheet" type="text/css" media="screen" href="lib/smartadmin/css/smartadmin-production.css">
 <link rel="stylesheet" type="text/css" media="screen" href="lib/smartadmin/css/smartadmin-skins.css">
 
+
+<link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css">
+
 <!-- SmartAdmin RTL Support is under construction
 <link rel="stylesheet" type="text/css" media="screen" href="css/smartadmin-rtl.css"> -->
 
@@ -23,7 +26,18 @@
 <link rel="stylesheet" type="text/css" media="screen" href="css/your_style.css"> -->
 
 <!-- Demo purpose only: goes with demo.js, you can delete this css when designing your own WebApp -->
+
 <link rel="stylesheet" type="text/css" media="screen" href="lib/smartadmin/css/demo.css">
+<link rel="stylesheet" type="text/css" media="screen" href="lib/js/jqGrid-5.1.0/jqGrid-master/css/ui.jqgrid.css">
+<link rel="stylesheet" type="text/css" media="screen" href="lib/js/jqGrid-5.1.0/jqGrid-master/css/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" type="text/css" media="screen" href="lib/js/jqGrid-5.1.0/jqGrid-master/css/ui.jqgrid-bootstrap-ui.css"> 
+
+<link rel="stylesheet" type="text/css" media="screen" href="lib/jquery/jquery-ui-1.12.1.custom/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" media="screen" href="lib/jquery/jquery-ui-1.12.1.custom/jquery-ui.theme.min.css">
+<link rel="stylesheet" type="text/css" media="screen" href="lib/jquery/jquery-ui-1.12.1.custom/jquery-ui.structure.min.css">
+<link rel="stylesheet" type="text/css" media="screen" href="lib/js/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css">
+<link rel="stylesheet/less" type="text/css" href='lib/js/bootstrap-datetimepicker-master/less/datetimepicker.less'/>
+
 
 <!-- FAVICONS -->
 <link rel="shortcut icon" href="lib/smartadmin/img/favicon/favicon.ico" type="image/x-icon">
@@ -33,6 +47,8 @@
 <!--<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,300,400,700">-->
 
 <script src="lib/jquery/html5shiv.js"></script>
+
+
 <!-- 兼容ie8的样式 -->
 <style>
       article,aside,dialog,footer,header,section,footer,nav,figure,menu{display:block}

@@ -39,8 +39,6 @@ public class DailyServiceImpl implements DailyService {
 	@Override
 	public Map<String, Object> getDailyMessage(Map map) {
 		Map<String, Object> mapp = new HashMap<String, Object>();
-		Map<String, Object> mapType = new HashMap<String, Object>();
-		List<Map> listMap=new ArrayList<Map>();
 		List<City> cityList = new ArrayList<City>();
 		List<ProjectBase> projectList = new ArrayList<ProjectBase>();
 		List<County> countyList = new ArrayList<County>();
@@ -48,30 +46,11 @@ public class DailyServiceImpl implements DailyService {
 		cityList = cityDao.selectCityList();
 		countyList = countyDao.selectByCityId(cityList.get(0).getId());
 		if (map.containsKey("cityId")) {
-			String cityId=map.get("cityId")+"";
-			
-			//城市名称转换为城市id
-//			 Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");  
-//		     boolean bool= pattern.matcher(cityId).matches();  
-//		     if(!bool){
-//		    	 City city=new City();
-//		    	 city= cityDao.selectByName(cityId);
-//		    	 map.put("cityId", city.getId());
-//		     }
-			
-			countyList = countyDao.selectByCityId(Integer.valueOf(map.get("cityId") + ""));
+			String cityId=Optional.ofNullable(map.get("cityId"))
+					.map(String->(map.get("cityId")+""))
+					.orElse("1");
+			countyList = countyDao.selectByCityId(Integer.valueOf(cityId));
 		}
-		//判断pType传过来的是字符串还是数字
-//		if(map.containsKey("pType")){
-//			String typeId=map.get("pType")+"";
-//			if(typeId.length()>1){
-//				mapType.put("tName", map.get("pType"));
-//				listMap=typeDao.selectList(map);
-//				String id=listMap.get(0).get("id")+"";
-//				map.put("pType", id);
-//			}
-//		}
-		
 		projectList = projectBaseDao.selectProjectList(map);
 		mapp.put("projectList", projectList);
 		mapp.put("cityList", cityList);
@@ -157,21 +136,27 @@ public class DailyServiceImpl implements DailyService {
 		// TODO Auto-generated method stub
 		List<Map> list = new ArrayList<Map>();
 		Map mapp = new HashMap();
+		mapp.put("state", map.get("state"));
 		String roleId = map.get("roleId") + "";
+		String rUid=map.get("rUid")+"";
 		switch (roleId) {
 		case "1":
-			list = recordDao.selectRecordList(null);
+			list = recordDao.selectRecordList(mapp);
 			break;
 		case "2":
 			mapp.put("roleId", 2);
+			mapp.put("rUid", rUid);
 			list = recordDao.selectRecordList(mapp);
 			mapp.put("roleId", 5);
+			mapp.put("rUid", null);
 			list.addAll(recordDao.selectRecordList(mapp));
 			break;
 		case "3":
 			mapp.put("roleId", 3);
+			mapp.put("rUid", rUid);
 			list = recordDao.selectRecordList(mapp);
 			mapp.put("roleId", 6);
+			mapp.put("rUid", null);
 			list.addAll(recordDao.selectRecordList(mapp));
 			break;
 		case "4":
@@ -179,10 +164,12 @@ public class DailyServiceImpl implements DailyService {
 			break;
 		case "5":
 			mapp.put("roleId", 5);
+			mapp.put("rUid", rUid);
 			list = recordDao.selectRecordList(mapp);
 			break;
 		case "6":
 			mapp.put("roleId", 6);
+			mapp.put("rUid", rUid);
 			list = recordDao.selectRecordList(mapp);
 			break;
 
@@ -194,36 +181,36 @@ public class DailyServiceImpl implements DailyService {
 
 	@Override
 	public List<Map> queryCheckList(Map map) {
+		Map<String,Object> mapp=new HashMap<String,Object>();
 		List<Map> list = new ArrayList<Map>();
 		// TODO Auto-generated method stub
 		String roleId = map.get("roleId") + "";
 		switch (roleId) {
 		case "1":
-			map.put("roleId", 1);
-			list.addAll(recordDao.selectRecordList(map));
-			map.put("roleId", 2);
-			list.addAll(recordDao.selectRecordList(map));
-			map.put("roleId", 3);
-			list.addAll(recordDao.selectRecordList(map));
-			map.put("roleId", 4);
-			list.addAll(recordDao.selectRecordList(map));
+			mapp.put("roleId", 1);
+			list.addAll(recordDao.selectRecordList(mapp));
+			mapp.put("roleId", 2);
+			list.addAll(recordDao.selectRecordList(mapp));
+			mapp.put("roleId", 3);
+			list.addAll(recordDao.selectRecordList(mapp));
+			mapp.put("roleId", 4);
+			list.addAll(recordDao.selectRecordList(mapp));
 			break;
 		case "2":
-			map.put("roleId", 5);
-			list.addAll(recordDao.selectRecordList(map));
+			mapp.put("roleId", 5);
+			list.addAll(recordDao.selectRecordList(mapp));
 			break;
 		case "3":
-			map.put("roleId", 6);
-			list.addAll(recordDao.selectRecordList(map));
+			mapp.put("roleId", 6);
+			list.addAll(recordDao.selectRecordList(mapp));
 			break;
-
 		default:
 			break;
 		}
 		return list;
 	}
 
-	@Override
+	@Override//更新日报
 	public void updateRecord(Record record) {
 		// TODO Auto-generated method stub
 		recordDao.updateByPrimaryKeySelective(record);
@@ -297,11 +284,16 @@ public class DailyServiceImpl implements DailyService {
 	@Override
 	public Record stringToInt(Record r) {
 		// TODO Auto-generated method stub
-		
+		String csmc=Optional.ofNullable(r.getrCsmc())
+				.map(Record->r.getrCsmc())
+				.orElse("1");
+		String xmlb=Optional.ofNullable(r.getrXmlb())
+				.map(Record->r.getrCsmc())
+				.orElse("1");
 		//城市名称转换为城市id
 		 Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");  
-	     boolean bool= pattern.matcher(r.getrCsmc()).matches();  
-	     boolean bool2= pattern.matcher(r.getrXmlb()).matches();  
+	     boolean bool= pattern.matcher(csmc).matches();  
+	     boolean bool2= pattern.matcher(xmlb).matches();  
 	     Map<String,Object> map=new HashMap<String,Object>();
 	     List<Map> listMap=new ArrayList<Map>();
 	     City city=new City();
@@ -309,14 +301,25 @@ public class DailyServiceImpl implements DailyService {
 	    	 
 	    	 city= cityDao.selectByName(r.getrCsmc());
 	    	 r.setrCsmc(city.getId()+"");
+	     }else{
+	    	 r.setrCsmc(csmc);
 	     }
 	     if(!bool2){
 	    	 map.put("tName", r.getrXmlb());
 				listMap=typeDao.selectList(map);
 				String id=listMap.get(0).get("id")+"";
 				r.setrXmlb(id);
+	     }else{
+	    	 r.setrXmlb(xmlb);
 	     }
 	     return r;
+	}
+
+	@Override
+	public List<Map> queryRecordListByUserId(Map map) {
+		// TODO Auto-generated method stub
+		
+		return recordDao.selectRecordListByUserId(map);
 	}
 
 

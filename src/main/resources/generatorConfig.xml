@@ -109,7 +109,7 @@
 		</javaClientGenerator>
 
 		<!-- 要生成那些表(更改tableName和domainObjectName就可以) -->
-		  <table schema="" tableName="s_task" domainObjectName="Task"
+		  <table schema="" tableName="s_apply" domainObjectName="Apply"
 			enableCountByExample="false" enableUpdateByExample="false"
 			enableDeleteByExample="false" enableSelectByExample="false"
 			selectByExampleQueryId="false">

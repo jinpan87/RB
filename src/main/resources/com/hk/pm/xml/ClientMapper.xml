@@ -40,6 +40,25 @@
     from s_client
     where id = #{id,jdbcType=BIGINT}
   </select>
+  
+  <!-- 通过客户单位编号查询客户信息 -->
+  <select id="selectClientListByCode" resultType="java.util.Map" parameterType="java.util.Map">
+  SELECT DISTINCT a.`code`,a.corporation,a.`name` as 'decisionName',a.phone as 'decisionPhone',
+  b.`name` as 'buttName',b.phone as 'buttPhone' from
+  (SELECT c_code as 'code',c_corporation as 'corporation',c_name as 'name',c_phone as 'phone' from s_client cl 
+  where c_customer_relations=0
+  <if test="cCode !=null">
+  and cl.c_code=#{cCode}
+  </if>
+  )a,
+  (SELECT c_code as 'code',c_corporation as 'corporation',c_name as 'name',c_phone as 'phone' from s_client cl 
+  where c_customer_relations=1
+  <if test="cCode !=null">
+  and cl.c_code=#{cCode}
+  </if>
+  )b; 
+  </select>
+  
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from s_client
     where id = #{id,jdbcType=BIGINT}
