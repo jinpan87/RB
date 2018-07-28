@@ -9,16 +9,16 @@
     <result column="r_returned_money" property="rReturnedMoney" jdbcType="REAL" />
     <result column="r_return_status" property="rReturnStatus" jdbcType="INTEGER" />
     <result column="r_down_payment_terms" property="rDownPaymentTerms" jdbcType="VARCHAR" />
-    <result column="r_back_day" property="rBackDay" jdbcType="TIMESTAMP" />
+    <result column="r_back_day" property="rBackDay" jdbcType="VARCHAR" />
     <result column="r_back_amount" property="rBackAmount" jdbcType="REAL" />
     <result column="r_count" property="rCount" jdbcType="INTEGER" />
     <result column="r_alarm" property="rAlarm" jdbcType="VARCHAR" />
     <result column="r_dept" property="rDept" jdbcType="VARCHAR" />
-    <result column="r_plant_day" property="rPlantDay" jdbcType="TIMESTAMP" />
+    <result column="r_plant_day" property="rPlantDay" jdbcType="VARCHAR" />
     <result column="r_customer" property="rCustomer" jdbcType="VARCHAR" />
     <result column="r_measure" property="rMeasure" jdbcType="VARCHAR" />
-    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
-    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, c_code, r_code, r_unreturn_money, r_returned_money, r_return_status, r_down_payment_terms, 
@@ -31,6 +31,29 @@
     from s_return_money
     where id = #{id,jdbcType=BIGINT}
   </select>
+  
+  <select id="selectReturnMoneyMsg" resultType="java.util.Map">
+  SELECT DATE_FORMAT(r.create_time,'%Y-%m-%d %H:%i:%s') as 'createTime',r.c_code as 'cCode',r.id as 'id',r.r_alarm as 'rAlarm',r.r_back_amount as 'rBackAmount',
+  DATE_FORMAT(r.r_back_day,'%Y-%m-%d %H:%i:%s') as 'rBackDay',r.r_code as 'rCode',r.r_count as 'rCount',r.r_customer as 'rCustomer',r.r_dept as 'rDept',
+  r.r_down_payment_terms as 'rDownPaymentTerms',r.r_measure as 'rMeasure',DATE_FORMAT(r.r_plant_day,'%Y-%m-%d %H:%i:%s') as 'rPlantDay',
+  r.r_returned_money as 'rReturnedMoney',
+  r.r_return_status as 'rReturnStatus',r.r_unreturn_money as 'rUnreturnMoney',DATE_FORMAT(r.update_time,'%Y-%m-%d %H:%i:%s') as 'updateTime',
+  c.c_name as 'cName',DATE_FORMAT(c.c_signing_date,'%Y-%m-%d %H:%i:%s') as 'cSigningDate',
+  c.c_total_amount as 'cTotalAmount',p.p_progress as 'pProgress',p.p_state as 'pState' 
+  from s_return_money r LEFT JOIN s_contract c on r.c_code=c.c_code LEFT JOIN s_project_base p on c.p_code=p.p_code
+  </select>
+  
+  <!-- 回款的合同下拉列表 -->
+  <select id="selectContractForReturnMoney" resultType="java.util.Map">
+  SELECT  IFNULL(c.c_code ,'') as 'cCode',IFNULL(c.c_name ,'') as 'cName',IFNULL(c.c_signing_date ,'') as 'cSigningDate',
+  IFNULL(c.c_total_amount ,'') as 'cTotalAmount',IFNULL(p.p_progress ,'') as 'pProgress',IFNULL(p.p_state ,'') as 'pState'
+  from  s_contract c LEFT JOIN s_project_base p on c.p_code=p.p_code
+  where 1=1 
+  <if test="cCode !=null">
+  and c.c_code=#{cCode}
+  </if>
+  </select>
+  
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from s_return_money
     where id = #{id,jdbcType=BIGINT}
@@ -52,9 +75,6 @@
   <insert id="insertSelective" parameterType="com.hk.pm.entity.ReturnMoney" >
     insert into s_return_money
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
-      </if>
       <if test="cCode != null" >
         c_code,
       </if>
@@ -73,7 +93,7 @@
       <if test="rDownPaymentTerms != null" >
         r_down_payment_terms,
       </if>
-      <if test="rBackDay != null" >
+      <if test="rBackDay != null and rBackDay !='' " >
         r_back_day,
       </if>
       <if test="rBackAmount != null" >
@@ -88,7 +108,7 @@
       <if test="rDept != null" >
         r_dept,
       </if>
-      <if test="rPlantDay != null" >
+      <if test="rPlantDay != null and rPlantDay!='' " >
         r_plant_day,
       </if>
       <if test="rCustomer != null" >
@@ -97,17 +117,11 @@
       <if test="rMeasure != null" >
         r_measure,
       </if>
-      <if test="createTime != null" >
-        create_time,
-      </if>
-      <if test="updateTime != null" >
+      <if test="updateTime != null and updateTime !=''" >
         update_time,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=BIGINT},
-      </if>
       <if test="cCode != null" >
         #{cCode,jdbcType=VARCHAR},
       </if>
@@ -126,8 +140,8 @@
       <if test="rDownPaymentTerms != null" >
         #{rDownPaymentTerms,jdbcType=VARCHAR},
       </if>
-      <if test="rBackDay != null" >
-        #{rBackDay,jdbcType=TIMESTAMP},
+      <if test="rBackDay != null and rBackDay!=''" >
+        #{rBackDay,jdbcType=VARCHAR},
       </if>
       <if test="rBackAmount != null" >
         #{rBackAmount,jdbcType=REAL},
@@ -141,8 +155,8 @@
       <if test="rDept != null" >
         #{rDept,jdbcType=VARCHAR},
       </if>
-      <if test="rPlantDay != null" >
-        #{rPlantDay,jdbcType=TIMESTAMP},
+      <if test="rPlantDay != null and rPlantDay !=''" >
+        #{rPlantDay,jdbcType=VARCHAR},
       </if>
       <if test="rCustomer != null" >
         #{rCustomer,jdbcType=VARCHAR},
@@ -150,11 +164,55 @@
       <if test="rMeasure != null" >
         #{rMeasure,jdbcType=VARCHAR},
       </if>
-      <if test="createTime != null" >
-        #{createTime,jdbcType=TIMESTAMP},
+      <if test="updateTime != null and updateTime !=''" >
+        #{updateTime,jdbcType=VARCHAR},
       </if>
-      <if test="updateTime != null" >
-        #{updateTime,jdbcType=TIMESTAMP},
+    </trim>
+    <trim prefix="ON DUPLICATE KEY UPDATE" suffix="" suffixOverrides=",">
+    	<if test="rCode != null" >
+        r_code = #{rCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cCode != null" >
+        c_code = #{cCode,jdbcType=VARCHAR},
+      </if>
+      <if test="rUnreturnMoney != null" >
+        r_unreturn_money = #{rUnreturnMoney,jdbcType=REAL},
+      </if>
+      <if test="rReturnedMoney != null" >
+        r_returned_money = #{rReturnedMoney,jdbcType=REAL},
+      </if>
+      <if test="rReturnStatus != null" >
+        r_return_status = #{rReturnStatus,jdbcType=INTEGER},
+      </if>
+      <if test="rDownPaymentTerms != null" >
+        r_down_payment_terms = #{rDownPaymentTerms,jdbcType=VARCHAR},
+      </if>
+      <if test="rBackDay != null and rBackDay !=''" >
+        r_back_day = #{rBackDay,jdbcType=VARCHAR},
+      </if>
+      <if test="rBackAmount != null" >
+        r_back_amount = #{rBackAmount,jdbcType=REAL},
+      </if>
+      <if test="rCount != null" >
+        r_count = #{rCount,jdbcType=INTEGER},
+      </if>
+      <if test="rAlarm != null" >
+        r_alarm = #{rAlarm,jdbcType=VARCHAR},
+      </if>
+      <if test="rDept != null" >
+        r_dept = #{rDept,jdbcType=VARCHAR},
+      </if>
+      <if test="rPlantDay != null and rPlantDay !=''" >
+        r_plant_day = #{rPlantDay,jdbcType=VARCHAR},
+      </if>
+      <if test="rCustomer != null" >
+        r_customer = #{rCustomer,jdbcType=VARCHAR},
+      </if>
+      <if test="rMeasure != null" >
+        r_measure = #{rMeasure,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null and updateTime!=''" >
+        update_time = #{updateTime,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>

@@ -20,6 +20,7 @@ import com.hk.pm.entity.BaseObject;
 import com.hk.pm.entity.Contract;
 import com.hk.pm.entity.ProjectBase;
 import com.hk.pm.entity.ReturnMoney;
+import com.hk.pm.entity.Rival;
 import com.hk.pm.entity.utilEntity.UtilProject;
 import com.hk.pm.service.ProjectService;
 import com.hk.pm.util.R;
@@ -367,8 +368,6 @@ public class ProjectController extends BaseController {
 		default:
 			break;
 		}
-		String typeName=request.getParameter("typeName");
-		System.out.println("data:"+oper+"typeName:"+typeName);
 		return R.ok();
 	}
 	
@@ -401,6 +400,31 @@ public class ProjectController extends BaseController {
 		List<Map> list=new ArrayList<Map>();
 		Map<String,Object> map=new HashMap<String,Object>();
 		list=projectService.queryTypeList(null);
+		JSONArray jsonArray=JSONArray.fromObject(list);
+		map.put("jsonArray", jsonArray);
+		return R.ok(map);
+	}
+	
+	
+	
+	@RequestMapping(value="project/queryRivalCode.do")//竞争商家下拉列表
+	public R queryRivalCode(HttpServletResponse response,HttpServletRequest request){
+		List<Map> list=new ArrayList<Map>();
+		Map<String,Object> map=new HashMap<String,Object>();
+		list=projectService.queryRivalList(null);
+		JSONArray jsonArray=JSONArray.fromObject(list);
+		map.put("jsonArray", jsonArray);
+		return R.ok(map);
+	}
+	@RequestMapping(value="project/rivalMsg.do")//竞争商家信息
+	public R rivalMsg(HttpServletResponse response,HttpServletRequest request){
+		List<Map> list=new ArrayList<Map>();
+		Rival r=new Rival();
+		Map<String,Object> map=new HashMap<String,Object>();
+		Map<String,Object> mapp=new HashMap<String,Object>();
+		String code=request.getParameter("param");
+		mapp.put("code", code);
+		list=projectService.queryRivalList(mapp);
 		JSONArray jsonArray=JSONArray.fromObject(list);
 		map.put("jsonArray", jsonArray);
 		return R.ok(map);

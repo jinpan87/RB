@@ -42,6 +42,8 @@ public interface ProjectBaseMapper {
     
     List<Map> selectProjectProgressManager(Map map);//项目进度管理列表查询
     
+    List<ProjectBase> selectProjectForContract(Map map);//合同编辑查询项目列表信息
+    
     /**
      *更新一个
      * @mbggenerated 2018-05-24

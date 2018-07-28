@@ -10,10 +10,9 @@
 	<title> 首页 </title>
 	<meta name="description" content="首页">
 	<meta name="author" content="lcy">
-	<%@ include file="common/commonHeader.jsp"%> 
 	
 <link rel="stylesheet" type="text/css" href="lib/smartadmin/css/style.css">
-
+	
 </head>
  <!-- possible classes: minified, fixed-ribbon, fixed-header, fixed-width-->
 <body class="fixed-navigation fixed-header fixed-ribbon">
@@ -250,7 +249,7 @@
 						<li>
 							<a href="apply/queryApplyListTop.do?userId=${users.id }&roleId=${users.permission}">我的报销单据</a>
 						</li>
-						  <li style="display:lock" >
+					   <li style="display:lock" >
 							<a href="apply/applyCheckTop.do?userId=${users.id }&roleId=${users.permission}">报销审核</a>
 						</li> 
 						<%--  <li style="display:none" >
@@ -259,6 +258,23 @@
 						<li>
 							<a href="daily/dailyCheck.do?userId=${users.id }&roleId=${users.permission}">日报审批</a>
 						</li>  --%>
+					</ul>
+				</li>
+				<li>
+					<a href="#"><i class="fa fa-lg fa-fw fa-table"></i> <span class="menu-item-parent">报表</span></a>
+					<ul>
+						<li>
+							<a href="statement/customer.do?userId=${users.id }&roleId=${users.permission}">客户信息</a>
+						</li>
+						<li>
+							<a href="statement/rival.do?userId=${users.id }&roleId=${users.permission}">竞争对手信息</a>
+						</li>
+						<li >
+							<a href="statement/contract.do?userId=${users.id }&roleId=${users.permission}">合同毛利率</a>
+						</li>
+						<li >
+							<a href="statement/returnMoney.do?userId=${users.id }&roleId=${users.permission}">到期应回款数据</a>
+						</li>
 					</ul>
 				</li>
 				<!-- <li>
@@ -532,7 +548,7 @@
 		</ul>
 	</div> -->
 	<!-- END SHORTCUT AREA -->
-	<%@ include file="common/commonScript.jsp"%>
+	<%@ include file="common/commonHeader.jsp"%> 
 	<script>
 	    $("aside").css("background","#333");
 	    $(function(){

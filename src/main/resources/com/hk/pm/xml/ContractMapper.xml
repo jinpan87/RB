@@ -6,7 +6,7 @@
     <result column="c_code" property="cCode" jdbcType="VARCHAR" />
     <result column="p_code" property="pCode" jdbcType="VARCHAR" />
     <result column="c_name" property="cName" jdbcType="VARCHAR" />
-    <result column="c_signing_date" property="cSigningDate" jdbcType="TIMESTAMP" />
+    <result column="c_signing_date" property="cSigningDate" jdbcType="VARCHAR" />
     <result column="c_total_amount" property="cTotalAmount" jdbcType="REAL" />
     <result column="c_cost" property="cCost" jdbcType="REAL" />
     <result column="c_upkeep" property="cUpkeep" jdbcType="REAL" />
@@ -17,8 +17,8 @@
     <result column="c_solution_people" property="cSolutionPeople" jdbcType="VARCHAR" />
     <result column="c_work_department" property="cWorkDepartment" jdbcType="VARCHAR" />
     <result column="c_maintain_department" property="cMaintainDepartment" jdbcType="VARCHAR" />
-    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
-    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
     <result column="c_info" property="cInfo" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
@@ -32,6 +32,23 @@
     from s_contract
     where id = #{id,jdbcType=BIGINT}
   </select>
+  
+  <!-- 合同毛利率列表 -->
+  <select id="selectContractListMsg" resultType="java.util.Map">
+   SELECT c.id as 'id', c_code as 'cCode', c.p_code as 'pCode',p.p_name as 'pName', c_name as 'cName', 
+   DATE_FORMAT(c_signing_date,'%Y-%m-%d %H:%i:%s') as 'cSigningDate',
+   c_total_amount as 'cTotalAmount', c_cost as 'cCost', c_upkeep as 'cUpkeep',
+   c_training as 'cTraining',c_pay as 'cPay', c_gross_profit_rate as 'cGrossProfitRate', c_guarantee_period as 'cGuaranteePeriod', 
+   c_solution_people as 'cSolutionPeople', c_work_department as 'cWorkDepartment', 
+   c_maintain_department as 'cMaintainDepartment', 
+   DATE_FORMAT(c.create_time,'%Y-%m-%d %H:%i:%s') as 'createTime', 
+   DATE_FORMAT(c.update_time,'%Y-%m-%d %H:%i:%s') as 'updateTime', 
+   c_info as 'cInfo',p.p_name as 'pName',p.p_manager as 'pManager',
+   p.p_province as 'pProvince',p.p_city as 'pCity',p.p_county as 'pCounty' from s_contract c 
+   LEFT JOIN s_project_base  p on c.p_code =p.p_code 
+  </select>
+  
+  
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from s_contract
     where id = #{id,jdbcType=BIGINT}
@@ -65,7 +82,7 @@
       <if test="cName != null" >
         c_name,
       </if>
-      <if test="cSigningDate != null" >
+      <if test="cSigningDate != null and cSigningDate !=''" >
         c_signing_date,
       </if>
       <if test="cTotalAmount != null" >
@@ -98,10 +115,10 @@
       <if test="cMaintainDepartment != null" >
         c_maintain_department,
       </if>
-      <if test="createTime != null" >
+      <if test="createTime != null and createTime !=''" >
         create_time,
       </if>
-      <if test="updateTime != null" >
+      <if test="updateTime != null and updateTime !=''" >
         update_time,
       </if>
       <if test="cInfo != null" >
@@ -121,7 +138,7 @@
       <if test="cName != null" >
         #{cName,jdbcType=VARCHAR},
       </if>
-      <if test="cSigningDate != null" >
+      <if test="cSigningDate != null and cSigningDate !=''" >
         #{cSigningDate,jdbcType=TIMESTAMP},
       </if>
       <if test="cTotalAmount != null" >
@@ -154,14 +171,67 @@
       <if test="cMaintainDepartment != null" >
         #{cMaintainDepartment,jdbcType=VARCHAR},
       </if>
-      <if test="createTime != null" >
+      <if test="createTime != null and createTime !=''" >
         #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateTime != null" >
+      <if test="updateTime != null and updateTime !=''" >
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
       <if test="cInfo != null" >
         #{cInfo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+    <trim prefix="ON DUPLICATE KEY UPDATE" suffix="" suffixOverrides=",">
+    <if test="cCode != null" >
+        c_code = #{cCode,jdbcType=VARCHAR},
+      </if>
+      <if test="pCode != null" >
+        p_code = #{pCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cName != null" >
+        c_name = #{cName,jdbcType=VARCHAR},
+      </if>
+      <if test="cSigningDate != null and cSigningDate !=''" >
+        c_signing_date = #{cSigningDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cTotalAmount != null" >
+        c_total_amount = #{cTotalAmount,jdbcType=REAL},
+      </if>
+      <if test="cCost != null" >
+        c_cost = #{cCost,jdbcType=REAL},
+      </if>
+      <if test="cUpkeep != null" >
+        c_upkeep = #{cUpkeep,jdbcType=REAL},
+      </if>
+      <if test="cTraining != null" >
+        c_training = #{cTraining,jdbcType=REAL},
+      </if>
+      <if test="cPay != null" >
+        c_pay = #{cPay,jdbcType=REAL},
+      </if>
+      <if test="cGrossProfitRate != null" >
+        c_gross_profit_rate = #{cGrossProfitRate,jdbcType=REAL},
+      </if>
+      <if test="cGuaranteePeriod != null" >
+        c_guarantee_period = #{cGuaranteePeriod,jdbcType=VARCHAR},
+      </if>
+      <if test="cSolutionPeople != null" >
+        c_solution_people = #{cSolutionPeople,jdbcType=VARCHAR},
+      </if>
+      <if test="cWorkDepartment != null" >
+        c_work_department = #{cWorkDepartment,jdbcType=VARCHAR},
+      </if>
+      <if test="cMaintainDepartment != null" >
+        c_maintain_department = #{cMaintainDepartment,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null and createTime !=''" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null and updateTime !=''" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cInfo != null" >
+        c_info = #{cInfo,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>

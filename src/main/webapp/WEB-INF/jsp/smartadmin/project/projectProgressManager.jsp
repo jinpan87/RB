@@ -8,7 +8,6 @@
 	<div class="row">
 		<!-- NEW WIDGET START -->
 		<article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-
 			<form id="search_user" class="form-horizontal" role="form">
 				<div class="form-group">
 					<label for="roleName" class="col-sm-2 control-label">项目进程管理：</label>
@@ -26,22 +25,19 @@
 						</select>
 					</div>
 					<div class="col-sm-3">
-					
 					<!-- <button class="btn btn-primary " data-toggle="modal" data-target="#myModal" onclick="addproject()">立项</button> -->
 						&nbsp;&nbsp;&nbsp;&nbsp;
 						&nbsp;&nbsp;&nbsp;&nbsp;
-						 <a class="btn btn-primary" href="javascript:addproject();">
-		              <i class="fa fa-plus"></i> 新增立项
-		            </a> 
+				   <!--  <a class="btn btn-primary" href="javascript:addproject();">
+		            <i class="fa fa-plus"></i> 新增立项
+		            </a>  -->
 					</div>
 				</div>
 			</form>
 			<table id="jqgrid"></table>
 			<div id="pjqgrid" style="height: 35px; background: #e5e5e5;"></div>
-			
 			</article>
 		<!-- WIDGET END -->
-
 	</div>
 </section>
 
@@ -69,84 +65,11 @@ chenckType();
    	        	obj.options[i].selected = 'selected';  
    	    }
  }
- var addproject=function(id){
-	var typeId=document.getElementById("projecttyep").value;
-	/* alert('项目类型id:'+typeId); */
-	$.post("project/addcheck.do",{typeId:typeId,id:id},function(data){
-		if(data.code==0){
-			window.location.hash="<%=basePath%>/add.do?typeId="+typeId;
-		}else if(data.code==1){
-			window.location.hash="<%=basePath%>/typeHK.do?typeId="+typeId;
-		}
-	});
- }
- 
- var editRow=function(project){
-	 
-	 console.log("project:"+project);
-	 $.post("project/editProject.do",{typeName:project},function(data){
-		 
-	 });
-	 /* window.location.hash="updateProject.do?id="+id; */
- }
- var showRow=function(id){
-	 window.location.hash="showProject.do?id="+id;
- }
- var deleteRow=function(id){
-	 window.location.hash="deleteProject.do?id="+id;
- }
  
 
  
 var pagefunction = function() {
 	
-	$('#dialog_delete').dialog({
-	      autoOpen : false,
-	      width : 600,
-	      resizable : false,
-	      modal : true,
-	      title : "删除该项",
-	      buttons : [{
-	        html : "<i class='fa fa-trash-o'></i>&nbsp; 删除",
-	        "class" : "btn btn-danger",
-	        click : function() {
-	          $('#dialog_delete').dialog('close');
-	          $.ajax({
-	            type : "GET",
-	            url : $('#dialog_delete').attr('url'),
-	            success : function(data) {
-	              if(data != null){
-		              if(data == 1) {
-		                $.smallBox({
-		                  title : "提示",
-		                  content : "<i class='fa fa-clock-o'></i> <i>删除成功</i>",
-		                  color : "#659265",
-		                  iconSmall : "fa fa-check fa-2x fadeInRight animated",
-		                  timeout : 4000
-		                });
-		                var s = Math.random();
-		              } else {
-		                $.smallBox({
-		                  title : "出错信息",
-		                  content : "<i class='fa fa-clock-o'></i> <i>删除失败</i>",
-		                  color : "#C46A69",
-		                  iconSmall : "fa fa-times fa-2x fadeInRight animated",
-		                  timeout : 4000
-		                });
-		              }
-	              }
-	            },
-	            dataType : 'json'
-	          });
-	        }
-	      }, {
-	        html : "<i class='fa fa-times'></i>&nbsp; 取消",
-	        "class" : "btn btn-default",
-	        click : function() {
-	          $(this).dialog("close");
-	        }
-	      }]
-	    });
 	loadScript("lib/smartadmin/js/plugin/jqgrid/jquery.jqGrid.min.js", run_jqgrid_function);
 	
 	
@@ -161,7 +84,7 @@ var pagefunction = function() {
 			datatype : "local",
 			height : 'auto',
 			colNames : ['操作','序号','项目编号','项目名称','项目 负责人','项目成员','项目类型编号','项目类型','创建时间','项目状态','省','市','区县','原承建厂家','预计落单时间',
-			            '预计合同额','签单概率','报价','客户编号','客户方决策人','决策人联系方式','客户方接口人','接口人联系方式','资金来源','资金是否到位','竞争对手情况',
+			            '预计合同额','签单概率','报价','客户编号','客户方决策人','决策人联系方式','客户方接口人','接口人联系方式','资金来源','资金是否到位','竞争对手','竞争对手情况',
 			            '成功经验/失败教训','最新进展'],		
 			colModel : [
 						{ name : 'act', index:'act',width:80,hidden:true }, 
@@ -193,16 +116,8 @@ var pagefunction = function() {
 				                }}},
 						{ name : 'state', index : 'state',editable: true,
 							editrules:{edithidden:false,required:true,integer:true},edittype:'select',editoptions:{value:'0:未结项;1:已结项'},formatter:function(cellvalue, options, rowObject){
-								var temp = '';
-								$.each(options.colModel.editoptions.value, function (key, value)
-								{
-								if (cellvalue == key || cellvalue == value)
-								{
-								temp = value;
-								return false;
-								}
-								});
-								return temp;
+								cellvalue=cellvalue==0?"未结项":"已结项";
+								return cellvalue;
 							}},
 						{ name : 'province', index : 'province',editable: true},
 						{ name : 'city', index : 'city',editable: true},
@@ -233,8 +148,8 @@ var pagefunction = function() {
 							                                    type: 'change',                 //下拉选择的时候  
 							                                    fn: function (e) {              //触发方法  
 							                                        //获取当前下拉框的id名字（这是点击编辑按钮时才需要的，因为点击编辑按钮后，schoolName的下拉框会变成1_roleid,其中”1“是行号）  
-							                                        var itemName = this.id;       
-							                                        var selectNum = itemName.match(/^\d+/);//（这是点击编辑按钮时才需要的）将id中的数字获取出来  
+							                                        var itemName = this.id; 
+							                                        var selectNum = itemName.split('_')[0];//（这是点击编辑按钮时才需要的）将id中的数字获取出来  
 							                                        var roleid = this.value; //获取选中的角色名称 
 							                                        getCustomerMsg(selectNum,roleid); //调用获取角色下对应用户信息data的方法  
 							                                    }  
@@ -248,7 +163,23 @@ var pagefunction = function() {
 						{ name : 'sourceFund', index : 'sourceFund',editable : true},
 						{ name : 'ready', index : 'ready',editable : true,
 							editrules:{edithidden:false,required:true},edittype:'select',editoptions:{value:'0:未到位;1:已到位'}},
-						{ name : 'information', index : 'information',editable : true},
+						{ name : 'rivalCode', index : 'rivalCode',editable : true,edittype:'select',
+								editoptions:{value:utilSelectMethod(),
+									dataEvents: [//给当前控件追加事件处理  
+												   {  
+												    type: 'change',                 //下拉选择的时候  
+												    fn: function (e) {              //触发方法  
+												    //获取当前下拉框的id名字（这是点击编辑按钮时才需要的，因为点击编辑按钮后，schoolName的下拉框会变成1_roleid,其中”1“是行号）  
+												    var itemName = this.id; 
+												    var selectNum = itemName.split('_')[0];//（这是点击编辑按钮时才需要的）将id中的数字获取出来  
+												    var roleid = this.value; //获取选中的角色名称 
+												    var url="project/rivalMsg.do";
+												    var column="information";
+												    utilselectMsg(url,selectNum,roleid,column); //调用获取角色下对应用户信息data的方法  
+												    }  
+												   }  
+												 ]}},
+						{ name : 'information', index : 'information',editable : true,edittype:'select',editoptions:{value:{'请选择':'请选择'}}},
 						{ name : 'summarize', index : 'summarize',editable : true},
 						{ name : 'progresses', index : 'progresses',sortable : false,
 							editable : true,edittype : "textarea",editoptions : {rows : "4",cols : "20"}},
@@ -370,7 +301,7 @@ var pagefunction = function() {
 				         }
 				     }  
 				 });
-		        	console.log("str:"+str);
+		        	
 		        return str;
 		  }
 
@@ -379,7 +310,6 @@ var pagefunction = function() {
 		        var str2 = ""; //决策人联系方式  
 		        var str3 = ""; //接口人
 		        var str4 = ""; //接口人联系方式  
-		  		console.log("selectNum:"+selectNum+"customerId:"+customerId);
 		        //将增加操作的弹出菜单中的roleid的下拉框内容清空（因为每次切换内容都需要变更）  
 		        $("select#decisionName").empty();  
 		        $("select#decisionPhone").empty();  
@@ -392,7 +322,7 @@ var pagefunction = function() {
 		        $("select#" + selectNum + "_buttName").empty(); 
 		        $("select#" + selectNum + "_buttPhone").empty(); 
 		        
-		        if (customerId == '请选择角色') {  
+		        if (customerId == '请选择') {  
 		            str += "<option>" + "请选择" + "</option>";  
 		            str2 += "<option>" + "请选择" + "</option>";  
 		            str3 += "<option>" + "请选择" + "</option>";  
@@ -440,7 +370,7 @@ var pagefunction = function() {
 		        var decisionPhone = $("select#decisionPhone");     
 		        decisionPhone.append(str2);//渲染option  
 		        //获取下面下拉框selectNum_username对象  
-		        var decisionPhone2 = $("select#" + selectNum + "_decisionPhone");     
+		       var decisionPhone2 = $("select#" + selectNum + "_decisionPhone");     
 		        decisionPhone2.append(str2);//渲染option 
 		        
 		        
@@ -457,6 +387,89 @@ var pagefunction = function() {
 		        var buttPhone2 = $("select#" + selectNum + "_buttPhone");     
 		        buttPhone2.append(str4);//渲染option 
 		  }
+		  
+		  
+		  function utilSelectMethod(){
+			  var str = "请选择:请选择;";
+	        	$.ajax({
+	            	url: "project/queryRivalCode.do",
+	            	async: false,
+	            	cache: true,
+	            	type: "POST",
+				data:{start:0,
+					limit:10							
+				},
+	            	success: function(result){
+	            		var jsonArray = eval(result.jsonArray);
+				if(result.jsonArray != undefined && result.jsonArray.length > 0){
+					window.jsonArray = jsonArray;
+			            //将数据里面的roleid逐个取出，并且以”xxxx:xxxx“设置为select的option值，连接成String对象  
+			            for (var i = 0; i < jsonArray.length; i++) {
+			                if (i != jsonArray.length-1) {
+			                	str+=jsonArray[i].code+":"+jsonArray[i].name+";";
+			                } else {  
+			                	str+=jsonArray[i].code+":"+jsonArray[i].name;
+			                }
+			            }  
+			         }
+			     }  
+			 });
+	        return str;
+		  }
+		  
+		  function utilselectMsg(url,selectNum, param,column) {
+		        var str = ""; //决策人 
+		       
+		        //将增加操作的弹出菜单中的roleid的下拉框内容清空（因为每次切换内容都需要变更）  
+		        $("select#information").empty();  
+		       
+		  
+		        //将修改操作中的1_roleid（1是行号）的下拉框内容清空（因为每次切换内容都需要变更）  
+		        $("select#" + selectNum + "_information").empty(); 
+		       
+		        
+		        if (param == '请选择') {  
+		            str += "<option>" + "请选择" + "</option>";  
+		        }  
+		        else {  
+		            for (var i = 0; i < jsonArray.length; i++) {  
+	                    $.ajax({  
+	                        url: url,  
+	                        async: false,  
+	                        cache: false,  
+	                        dataType: "json",  
+	                        data: {  
+	                        	param: param  //传入角色id，到后台获取json  
+	                        },  
+	                        success: function (result) {
+	                        	let json=eval(result.jsonArray);
+	                            if (json.length > 0) {  
+	                                for (var i = 0; i < json.length; i++) {   //循环生成option，并且连接成String对象  
+	                                    str += "<option value='" + json[i].information + "'>" + json[i].information + "</option>";  
+	                                    
+	                                }  
+	                            }  
+	                            else {  
+	                                str += "<option>" + "暂无数据" + "</option>";  
+	                            }  
+	                        }  
+	                    });  
+	                    break;  
+		            }  
+		        } 
+		        console.log("str:"+str);
+		        //获取下面下拉框username对象  
+		        var decisionName = $("select#information");     
+		        decisionName.append(str);//渲染option  
+		        //获取下面下拉框selectNum_username对象  
+		        var decisionName2 = $("select#" + selectNum + "_information");     
+		        decisionName2.append(str);//渲染option 
+		        
+		  }
+		  
+		  
+		 
+		 
 			 // remove classes
 			$(".ui-jqgrid").removeClass("ui-widget ui-widget-content");
 		    $(".ui-jqgrid-view").children().removeClass("ui-widget-header ui-state-default");

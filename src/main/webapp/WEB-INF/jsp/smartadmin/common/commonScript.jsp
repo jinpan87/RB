@@ -69,4 +69,6 @@
 <!-- jqgrid -->
 <script src="lib/jquery/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
 <script src="lib/js/jqGrid-5.1.0/jqGrid-master/js/i18n/grid.locale-cn.js"></script>
+<script src="lib/smartadmin/js/plugin/jqgrid/grid.locale-en.min.js"></script>
+<script src="lib/smartadmin/js/plugin/jqgrid/jquery.jqGrid.min.js"></script>
 <script src="lib/js/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.min.js"></script>

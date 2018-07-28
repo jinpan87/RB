@@ -25,14 +25,15 @@
     <result column="c_health" property="cHealth" jdbcType="VARCHAR" />
     <result column="c_family" property="cFamily" jdbcType="VARCHAR" />
     <result column="c_customer_relations" property="cCustomerRelations" jdbcType="VARCHAR" />
-    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
-    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, c_code, c_submitter, c_name, c_province, c_district, c_corporation, c_sex, c_birthday, 
     c_age, c_duty, c_administrative_level, c_school, c_experience, c_mobile_phone, c_phone, 
     c_character, c_hobby, c_smoke, c_drink, c_health, c_family, c_customer_relations, 
-    create_time, update_time
+    DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') as 'create_time', 
+    DATE_FORMAT(update_time,'%Y-%m-%d %H:%i:%s') as 'update_time'
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -41,22 +42,28 @@
     where id = #{id,jdbcType=BIGINT}
   </select>
   
+  <!-- 查询客户信息列表 -->
+  <select id="selectClientList" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from s_client
+  </select>
+  
   <!-- 通过客户单位编号查询客户信息 -->
   <select id="selectClientListByCode" resultType="java.util.Map" parameterType="java.util.Map">
-  SELECT DISTINCT a.`code`,a.corporation,a.`name` as 'decisionName',a.phone as 'decisionPhone',
-  b.`name` as 'buttName',b.phone as 'buttPhone' from
-  (SELECT c_code as 'code',c_corporation as 'corporation',c_name as 'name',c_phone as 'phone' from s_client cl 
-  where c_customer_relations=0
-  <if test="cCode !=null">
-  and cl.c_code=#{cCode}
-  </if>
-  )a,
-  (SELECT c_code as 'code',c_corporation as 'corporation',c_name as 'name',c_phone as 'phone' from s_client cl 
-  where c_customer_relations=1
-  <if test="cCode !=null">
-  and cl.c_code=#{cCode}
-  </if>
-  )b; 
+SELECT IFNULL(a.code,'') as 'code',IFNULL(a.corporation,'') as 'corporation',IFNULL(b.name,'') as 'decisionName',
+IFNULL(b.phone,'')  as 'decisionPhone',IFNULL(c.name,'') as 'buttName',IFNULL(c.phone,'') as 'buttPhone' FROM
+(SELECT c_code as 'code',c_corporation as 'corporation' from s_client cl 
+where 1=1
+<if test="cCode !=null">
+and cl.c_code=#{cCode}
+</if>
+ GROUP BY `CODE`)a 
+LEFT JOIN 
+(SELECT c_code as 'code',c_corporation as 'corporation',c_name as 'name',c_phone as 'phone' from s_client cl 
+  where c_customer_relations=0)b on a.code=b.code 
+LEFT JOIN (SELECT c_code as 'code',c_corporation as 'corporation',c_name as 'name',c_phone as 'phone' from s_client cl 
+  where c_customer_relations=1)c on a.code=c.code
   </select>
   
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
@@ -83,6 +90,7 @@
       #{cFamily,jdbcType=VARCHAR}, #{cCustomerRelations,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
       #{updateTime,jdbcType=TIMESTAMP})
   </insert>
+  
   <insert id="insertSelective" parameterType="com.hk.pm.entity.Client" >
     insert into s_client
     <trim prefix="(" suffix=")" suffixOverrides="," >
@@ -237,6 +245,80 @@
       </if>
       <if test="updateTime != null" >
         #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+    <trim prefix="ON DUPLICATE KEY UPDATE" suffix="" suffixOverrides=",">
+    <if test="cCode != null" >
+        c_code = #{cCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cSubmitter != null" >
+        c_submitter = #{cSubmitter,jdbcType=VARCHAR},
+      </if>
+      <if test="cName != null" >
+        c_name = #{cName,jdbcType=VARCHAR},
+      </if>
+      <if test="cProvince != null" >
+        c_province = #{cProvince,jdbcType=VARCHAR},
+      </if>
+      <if test="cDistrict != null" >
+        c_district = #{cDistrict,jdbcType=VARCHAR},
+      </if>
+      <if test="cCorporation != null" >
+        c_corporation = #{cCorporation,jdbcType=VARCHAR},
+      </if>
+      <if test="cSex != null" >
+        c_sex = #{cSex,jdbcType=CHAR},
+      </if>
+      <if test="cBirthday != null" >
+        c_birthday = #{cBirthday,jdbcType=VARCHAR},
+      </if>
+      <if test="cAge != null" >
+        c_age = #{cAge,jdbcType=INTEGER},
+      </if>
+      <if test="cDuty != null" >
+        c_duty = #{cDuty,jdbcType=VARCHAR},
+      </if>
+      <if test="cAdministrativeLevel != null" >
+        c_administrative_level = #{cAdministrativeLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="cSchool != null" >
+        c_school = #{cSchool,jdbcType=VARCHAR},
+      </if>
+      <if test="cExperience != null" >
+        c_experience = #{cExperience,jdbcType=VARCHAR},
+      </if>
+      <if test="cMobilePhone != null" >
+        c_mobile_phone = #{cMobilePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="cPhone != null" >
+        c_phone = #{cPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="cCharacter != null" >
+        c_character = #{cCharacter,jdbcType=VARCHAR},
+      </if>
+      <if test="cHobby != null" >
+        c_hobby = #{cHobby,jdbcType=VARCHAR},
+      </if>
+      <if test="cSmoke != null" >
+        c_smoke = #{cSmoke,jdbcType=VARCHAR},
+      </if>
+      <if test="cDrink != null" >
+        c_drink = #{cDrink,jdbcType=VARCHAR},
+      </if>
+      <if test="cHealth != null" >
+        c_health = #{cHealth,jdbcType=VARCHAR},
+      </if>
+      <if test="cFamily != null" >
+        c_family = #{cFamily,jdbcType=VARCHAR},
+      </if>
+      <if test="cCustomerRelations != null" >
+        c_customer_relations = #{cCustomerRelations,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>

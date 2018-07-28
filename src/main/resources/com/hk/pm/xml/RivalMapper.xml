@@ -16,7 +16,8 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, r_code, r_product, r_area, r_name, r_amount, r_information_source, r_precision, 
-    r_information, create_time, update_time
+    r_information, DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') AS 'create_time', 
+    DATE_FORMAT(update_time,'%Y-%m-%d %H:%i:%s') AS 'update_time'
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -24,6 +25,26 @@
     from s_rival
     where id = #{id,jdbcType=BIGINT}
   </select>
+  
+  <select id="selectRivalListMsg" resultMap="BaseResultMap"  >
+    select 
+    <include refid="Base_Column_List" />
+    from s_rival
+  </select>
+  
+  <!-- 查询竞争对手列表 -->
+  <select id="selectRivalList" resultType="java.util.Map" parameterType="java.util.Map">
+  	select 
+    id as 'id', r_code as 'code', r_product as 'product', r_area as 'area', r_name as 'name',
+     r_amount as 'amount', r_information_source as 'informationSource', r_precision as 'precision', 
+    r_information as 'information', create_time as 'createTime', update_time as 'updateTime'
+    from s_rival
+    where 1=1
+    <if test="code !=null">
+    and r_code=#{code}
+    </if>
+  </select>
+  
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from s_rival
     where id = #{id,jdbcType=BIGINT}
@@ -108,6 +129,38 @@
       </if>
       <if test="updateTime != null" >
         #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+    <trim prefix="ON  DUPLICATE KEY UPDATE" suffix="" suffixOverrides=",">
+    <if test="rCode != null" >
+        r_code = #{rCode,jdbcType=VARCHAR},
+      </if>
+      <if test="rProduct != null" >
+        r_product = #{rProduct,jdbcType=VARCHAR},
+      </if>
+      <if test="rArea != null" >
+        r_area = #{rArea,jdbcType=VARCHAR},
+      </if>
+      <if test="rName != null" >
+        r_name = #{rName,jdbcType=VARCHAR},
+      </if>
+      <if test="rAmount != null" >
+        r_amount = #{rAmount,jdbcType=REAL},
+      </if>
+      <if test="rInformationSource != null" >
+        r_information_source = #{rInformationSource,jdbcType=VARCHAR},
+      </if>
+      <if test="rPrecision != null" >
+        r_precision = #{rPrecision,jdbcType=VARCHAR},
+      </if>
+      <if test="rInformation != null" >
+        r_information = #{rInformation,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>

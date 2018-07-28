@@ -31,6 +31,8 @@ public interface ClientMapper {
     Client selectByPrimaryKey(Long id);
     
     List<Map> selectClientListByCode(Map map);//查询接口人和决策人信息
+    
+    List<Client> selectClientList();//查询所有客户信息列表
 
     /**
      *

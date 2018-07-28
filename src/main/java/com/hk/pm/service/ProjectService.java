@@ -6,6 +6,7 @@ import java.util.Map;
 import com.hk.pm.entity.Contract;
 import com.hk.pm.entity.ProjectBase;
 import com.hk.pm.entity.ReturnMoney;
+import com.hk.pm.entity.Rival;
 
 public interface ProjectService {
 	List<Map> queryProjectList(Map map);
@@ -27,4 +28,5 @@ public interface ProjectService {
 	
 	List<Map> queryClientList(Map map);//查询接口人和决策人信息;
 	
+	List<Map> queryRivalList(Map map);//查询竞争对手列表
 }

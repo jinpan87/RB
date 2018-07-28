@@ -128,12 +128,21 @@ public class Client {
     /**
      * 创建时间
      */
-    private Date createTime;
+    private String createTime;
 
     /**
      * 更新时间
      */
-    private Date updateTime;
+    private String updateTime;
+    
+    private String oper;//增删改查标签
+
+	public String getOper() {
+		return oper;
+	}
+	public void setOper(String oper) {
+		this.oper = oper;
+	}
 
     /**
      * 
@@ -507,7 +516,7 @@ public class Client {
      * 创建时间
      * @return create_time 创建时间
      */
-    public Date getCreateTime() {
+    public String getCreateTime() {
         return createTime;
     }
 
@@ -515,7 +524,7 @@ public class Client {
      * 创建时间
      * @param createTime 创建时间
      */
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
 
@@ -523,7 +532,7 @@ public class Client {
      * 更新时间
      * @return update_time 更新时间
      */
-    public Date getUpdateTime() {
+    public String getUpdateTime() {
         return updateTime;
     }
 
@@ -531,7 +540,7 @@ public class Client {
      * 更新时间
      * @param updateTime 更新时间
      */
-    public void setUpdateTime(Date updateTime) {
+    public void setUpdateTime(String updateTime) {
         this.updateTime = updateTime;
     }
 }

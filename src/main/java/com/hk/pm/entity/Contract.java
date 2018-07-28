@@ -33,7 +33,7 @@ public class Contract {
     /**
      * 签订日期
      */
-    private Date cSigningDate;
+    private String cSigningDate;
 
     /**
      * 合同总额
@@ -88,17 +88,26 @@ public class Contract {
     /**
      * 创建时间
      */
-    private Date createTime;
+    private String createTime;
 
     /**
      * 更新时间
      */
-    private Date updateTime;
+    private String updateTime;
 
     /**
      * 备注
      */
     private String cInfo;
+    
+    private String oper;//增删改查标签
+
+   	public String getOper() {
+   		return oper;
+   	}
+   	public void setOper(String oper) {
+   		this.oper = oper;
+   	}
 
     /**
      * 
@@ -168,7 +177,7 @@ public class Contract {
      * 签订日期
      * @return c_signing_date 签订日期
      */
-    public Date getcSigningDate() {
+    public String getcSigningDate() {
         return cSigningDate;
     }
 
@@ -176,7 +185,7 @@ public class Contract {
      * 签订日期
      * @param cSigningDate 签订日期
      */
-    public void setcSigningDate(Date cSigningDate) {
+    public void setcSigningDate(String cSigningDate) {
         this.cSigningDate = cSigningDate;
     }
 
@@ -344,7 +353,7 @@ public class Contract {
      * 创建时间
      * @return create_time 创建时间
      */
-    public Date getCreateTime() {
+    public String getCreateTime() {
         return createTime;
     }
 
@@ -352,7 +361,7 @@ public class Contract {
      * 创建时间
      * @param createTime 创建时间
      */
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
 
@@ -360,7 +369,7 @@ public class Contract {
      * 更新时间
      * @return update_time 更新时间
      */
-    public Date getUpdateTime() {
+    public String getUpdateTime() {
         return updateTime;
     }
 
@@ -368,7 +377,7 @@ public class Contract {
      * 更新时间
      * @param updateTime 更新时间
      */
-    public void setUpdateTime(Date updateTime) {
+    public void setUpdateTime(String updateTime) {
         this.updateTime = updateTime;
     }
 

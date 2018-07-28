@@ -1,5 +1,8 @@
 package com.hk.pm.dao;
 
+import java.util.List;
+import java.util.Map;
+
 import com.hk.pm.entity.ReturnMoney;
 
 public interface ReturnMoneyMapper {
@@ -26,6 +29,10 @@ public interface ReturnMoneyMapper {
      * @mbggenerated 2018-05-24
      */
     ReturnMoney selectByPrimaryKey(Long id);
+    
+    List<Map> selectReturnMoneyMsg();//汇款信息列表
+    
+    List<Map> selectContractForReturnMoney(Map map);//回款项目中的合同下拉列表
 
     /**
      *

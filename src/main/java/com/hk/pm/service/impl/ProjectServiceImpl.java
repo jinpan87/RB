@@ -15,11 +15,13 @@ import com.hk.pm.dao.ContractMapper;
 import com.hk.pm.dao.ProjectBaseMapper;
 import com.hk.pm.dao.ProjectProgressMapper;
 import com.hk.pm.dao.ReturnMoneyMapper;
+import com.hk.pm.dao.RivalMapper;
 import com.hk.pm.dao.TypeMapper;
 import com.hk.pm.entity.Contract;
 import com.hk.pm.entity.ProjectBase;
 import com.hk.pm.entity.ProjectProgress;
 import com.hk.pm.entity.ReturnMoney;
+import com.hk.pm.entity.Rival;
 import com.hk.pm.service.ProjectService;
 import com.hk.pm.util.ReadConfig;
 @Service
@@ -36,6 +38,8 @@ public class ProjectServiceImpl implements ProjectService{
 	ProjectProgressMapper progressDao;
 	@Autowired
 	ClientMapper clientDao;
+	@Autowired
+	RivalMapper rivalDao;
 	
 	SimpleDateFormat  sdf=new SimpleDateFormat("yyyyMMdd");
 	
@@ -165,7 +169,7 @@ public class ProjectServiceImpl implements ProjectService{
 		ProjectBase project=(ProjectBase) map.get("projectBase");
 		ProjectProgress progress=(ProjectProgress) map.get("progress");
 		mapp.put("typeId", project.getpType());
-		project.setpCode(getProjectCode(map));
+		project.setpCode(getProjectCode(mapp));
 		progress.setpCode(project.getpCode());
 		projectDao.insertSelective(project);
 		progressDao.insertSelective(progress);
@@ -182,5 +186,10 @@ public class ProjectServiceImpl implements ProjectService{
 	public List<Map> queryClientList(Map map) {
 		// TODO Auto-generated method stub
 		return clientDao.selectClientListByCode(map);
+	}
+	@Override
+	public List<Map> queryRivalList(Map map) {
+		// TODO Auto-generated method stub
+		return rivalDao.selectRivalList(map);
 	}
 }

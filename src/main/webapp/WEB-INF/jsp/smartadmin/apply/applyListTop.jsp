@@ -12,21 +12,6 @@
 				<div class="form-group">
 					<!-- <label for="roleName" class="col-sm-2 control-label">项目类别：</label> -->
 					<div class="col-sm-4">
-						<!-- <label><input type="radio" value="0" name="radio" >未审批</label>
-						<label><input type="radio" value="1" name="radio">已审批</label>
-						<label><input type="radio" value="2" name="radio">拒绝</label>
-						<label><input type="radio" value="" name="radio">全部</label> -->
-						<%-- <input type="date" name="WaterDetail" class="form-control" id="WaterDetail" placeholder="时间" value="${WaterDetail.fdcreatetime}"> --%>
-						<%-- <select name="projecttyep" class="form-control input-sm"
-							id="projecttyep" value="${json.typeId }" onchange="selectTyep(this.value)">
-							<option value="1">销售</option>
-							<option value="2">市场拓展</option>
-							<option value="3">回款</option>
-							<option value="4">关系维护</option>
-							<!-- <option value="5">售后</option> -->
-							<option value="6">自营</option>
-							<option value="7">专项</option>
-						</select> --%>
 					</div>
 					<div class="col-sm-3">
 					

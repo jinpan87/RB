@@ -1,7 +1,5 @@
 package com.hk.pm.entity;
 
-import java.util.Date;
-
 import org.apache.ibatis.type.Alias;
 /**
  * 回款
@@ -73,7 +71,7 @@ public class ReturnMoney {
     /**
      * 预计回款日期
      */
-    private Date rPlantDay;
+    private String rPlantDay;
 
     /**
      * 客户接口人
@@ -88,13 +86,33 @@ public class ReturnMoney {
     /**
      * 创建时间
      */
-    private Date createTime;
+    private String createTime;
 
     /**
      * 更新时间
      */
-    private Date updateTime;
+    private String updateTime;
+    
+    private String cName;//合同名称
+    
+    private String pProgress;//项目进展
+    
+    private String pState;//项目状态
+    
+    private String cSigningDate;//签单时间
+    
+    private float cTotalAmount;//项目总金额
+    
+    private String oper;//增删改查标签
 
+   	public String getOper() {
+   		return oper;
+   	}
+   	public void setOper(String oper) {
+   		this.oper = oper;
+   	}
+   	
+   	
     /**
      * 
      * @return id 
@@ -291,7 +309,7 @@ public class ReturnMoney {
      * 预计回款日期
      * @return r_plant_day 预计回款日期
      */
-    public Date getrPlantDay() {
+    public String getrPlantDay() {
         return rPlantDay;
     }
 
@@ -299,7 +317,7 @@ public class ReturnMoney {
      * 预计回款日期
      * @param rPlantDay 预计回款日期
      */
-    public void setrPlantDay(Date rPlantDay) {
+    public void setrPlantDay(String rPlantDay) {
         this.rPlantDay = rPlantDay;
     }
 
@@ -339,7 +357,7 @@ public class ReturnMoney {
      * 创建时间
      * @return create_time 创建时间
      */
-    public Date getCreateTime() {
+    public String getCreateTime() {
         return createTime;
     }
 
@@ -347,7 +365,7 @@ public class ReturnMoney {
      * 创建时间
      * @param createTime 创建时间
      */
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
 
@@ -355,7 +373,7 @@ public class ReturnMoney {
      * 更新时间
      * @return update_time 更新时间
      */
-    public Date getUpdateTime() {
+    public String getUpdateTime() {
         return updateTime;
     }
 
@@ -363,7 +381,38 @@ public class ReturnMoney {
      * 更新时间
      * @param updateTime 更新时间
      */
-    public void setUpdateTime(Date updateTime) {
+    public void setUpdateTime(String updateTime) {
         this.updateTime = updateTime;
     }
+	public String getcName() {
+		return cName;
+	}
+	public void setcName(String cName) {
+		this.cName = cName;
+	}
+	public String getpProgress() {
+		return pProgress;
+	}
+	public void setpProgress(String pProgress) {
+		this.pProgress = pProgress;
+	}
+	public String getpState() {
+		return pState;
+	}
+	public void setpState(String pState) {
+		this.pState = pState;
+	}
+	public String getcSigningDate() {
+		return cSigningDate;
+	}
+	public void setcSigningDate(String cSigningDate) {
+		this.cSigningDate = cSigningDate;
+	}
+	public float getcTotalAmount() {
+		return cTotalAmount;
+	}
+	public void setcTotalAmount(float cTotalAmount) {
+		this.cTotalAmount = cTotalAmount;
+	}
+    
 }
